@@ -1,3 +1,9 @@
+var MODE = {
+  FIZZ: -1,
+  CHARGE: 0,
+  ATTACK: 1,
+  DEFEND: 2
+}
 var Player = function(game) {
   var canvas = game.game.add.graphics(0, 0);
   var style = { font: "18px Arial", fill: "#fff" };
@@ -39,17 +45,16 @@ var Player = function(game) {
       this._defendDown = defend;
     },
     attackCallback: function() {
-      if( this.mode == 0 ) {
-        this.mode = 1;
+      if( this.mode == MODE.CHARGE ) {
+        this.mode = MODE.ATTACK;
         console.log("Attack Fired");
       } else {
         this.fizzle();
       }
-      this.mode = 1;
     },
     defendCallback: function() {
-      if ( this.mode == 0 ) {
-        this.mode = 2;
+      if ( this.mode == MODE.CHARGE ) {
+        this.mode = MODE.DEFEND;
         console.log("Defend Fired");
       } else {
         this.fizzle();
@@ -58,8 +63,8 @@ var Player = function(game) {
     fizzle: function() {
       console.log("Fizzled");
       this.fizzled = true;
-      this.mode = -1;
-      this.lastMode = -1;
+      this.mode = MODE.FIZZ;
+      this.lastMode = MODE.FIZZ;
     },
     /**
      * Updates the player each round.
@@ -68,23 +73,31 @@ var Player = function(game) {
      */
     roundUpdate: function(enemy) {
       switch(this.mode) {
-        case 1: // Attack
-          if ( enemy.mode == 0 ) {
-            enemy.health -= this.charge;
-          } else if ( enemy.mode == 1 ) {
-            var chargeDiff = this.charge - enemy.charge;
-            if ( chargeDiff > 0 ) {
-              enemy.health -= chargeDiff;
-            }
+        case MODE.ATTACK: // Attack
+          switch (enemy.mode) {
+            case MODE.FIZZ:
+            case MODE.CHARGE:
+              enemy.health -= this.charge;
+            break;
+            case MODE.ATTACK:
+              var chargeDiff = this.charge - enemy.charge;
+              if ( chargeDiff > 0 ) {
+                enemy.health -= chargeDiff;
+              }
+            break;
+            case MODE.DEFEND:
+              if ( enemy.charge <= 0 ) {
+                enemy.health -= this.charge;
+              }
+            break;
+
           }
         break;
       }
-
-
     },
     roundPostUpdate: function() {
       switch(this.mode) {
-        case 0: // Charge
+        case MODE.CHARGE: // Charge
           if ( this.charge < 3 ) {
             this.charge += 1;
             this.overcharge = 0;
@@ -96,23 +109,28 @@ var Player = function(game) {
             }
           }
         break;
-        case 1: // Attack
+        case MODE.ATTACK: // Attack
           this.charge = 0;
+          this.overcharge = 0;
         break;
-        case 2: // Defend
+        case MODE.DEFEND: // Defend
           this.charge -= 1;
+          this.overcharge = 0;
         break;
       }
 
       this.lastMode = this.mode;
-      this.mode = 0;
+      this.mode = MODE.CHARGE;
       this.fizzled = false;
+      if ( this.charge < 0 ) {
+        this.charge = 0;
+      }
     },
     reset: function() {
       this.overcharge = 0;
       this.charge = 0;
       this.health = 6;
-      this.mode = 0;
+      this.mode = MODE.CHARGE;
       this.lastMode = 0;
     },
     render: function(x, y) {
@@ -147,6 +165,7 @@ var Player = function(game) {
 
       modeText.x = x;
       modeText.y = y + 60;
+
       switch ( this.lastMode ) {
         case -1:
           modeText.text = "Miss";
