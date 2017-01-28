@@ -8,6 +8,7 @@ var Player = function(game) {
     health: 6,
     mode: 0,
     lastMode: 0,
+    winCount: 0,
     fizzled: false,
     _attackDown: false,
     _defendDown: false,
@@ -107,7 +108,13 @@ var Player = function(game) {
       this.mode = 0;
       this.fizzled = false;
     },
-
+    reset: function() {
+      this.overcharge = 0;
+      this.charge = 0;
+      this.health = 6;
+      this.mode = 0;
+      this.lastMode = 0;
+    },
     render: function(x, y) {
       canvas.clear();
 
@@ -154,6 +161,7 @@ var Player = function(game) {
           modeText.text = "Defend";
           break;
       }
+      modeText.text += "\nWins: " + this.winCount;
     }
   }
 }

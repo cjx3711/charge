@@ -70,7 +70,7 @@ BasicGame.Game.prototype = {
 			this.roundTimer);
 		this.player1.buttonHandler(
 			this.game.input.keyboard.isDown(Phaser.Keyboard.A),
-			this.game.input.keyboard.isDown(Phaser.Keyboard.S),
+			this.game.input.keyboard.isDown(Phaser.Keyboard.D),
 			this.roundTimer);
 		this.roundRenderer.render(300, 50);
 		this.player1.render(10, 100);
@@ -83,6 +83,19 @@ BasicGame.Game.prototype = {
 
 		this.player1.roundPostUpdate();
 		this.player2.roundPostUpdate();
+
+		if ( this.player1.health <= 0 ) {
+			this.player1.reset();
+			this.player2.reset();
+			this.player2.winCount += 1;
+			this.roundTimer = this.roundTime;
+		}
+		if ( this.player2.health <= 0 ) {
+			this.player1.reset();
+			this.player2.reset();
+			this.player1.winCount += 1;
+			this.roundTimer = this.roundTime;
+		}
 	},
 
 	quitGame: function (pointer) {
