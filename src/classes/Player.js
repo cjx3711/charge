@@ -26,7 +26,6 @@ var Player = function(game) {
         return;
       }
       if ( !this._attackDown && attack) {
-        console.log("Pressed attack", roundTimer, game.roundTime * game.timeThreshold );
         if ( roundTimer < game.roundTime * game.timeThreshold ) {
           this.attackCallback();
         } else {
@@ -35,7 +34,6 @@ var Player = function(game) {
       }
       this._attackDown = attack;
       if ( !this._defendDown && defend) {
-        console.log("Pressed defend");
         if ( roundTimer < game.roundTime * game.timeThreshold ) {
           this.defendCallback();
         } else {
@@ -47,7 +45,6 @@ var Player = function(game) {
     attackCallback: function() {
       if( this.mode == MODE.CHARGE ) {
         this.mode = MODE.ATTACK;
-        console.log("Attack Fired");
       } else {
         this.fizzle();
       }
@@ -55,7 +52,6 @@ var Player = function(game) {
     defendCallback: function() {
       if ( this.mode == MODE.CHARGE ) {
         this.mode = MODE.DEFEND;
-        console.log("Defend Fired");
       } else {
         this.fizzle();
       }
@@ -164,7 +160,7 @@ var Player = function(game) {
       }
 
       modeText.x = x;
-      modeText.y = y + 60;
+      modeText.y = y + 65;
 
       switch ( this.lastMode ) {
         case -1:
