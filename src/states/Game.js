@@ -22,14 +22,17 @@ BasicGame.Game = function (game) {
 
     //	You can use any of these from any function within this State.
     //	But do consider them as being 'reserved words', i.e. don't create a property for your own game called "world" or you'll over-write the world reference.
-		this.roundTimer = 3000;
+		this.roundTime = 1000;
+		this.timeThreshold = 0.15;
+		this.roundTimer = this.roundTime;
 		this.gameObj = {
 			screenText: null,
 			player1Stats: null,
-			player2Stats: null
+			player2Stats: null,
+
 		}
 
-		this.createPlayerObject = function() {
+		this.createPlayerObject = function(game) {
 			return {
 				charge : 0,
 				health: 3,
@@ -45,8 +48,8 @@ BasicGame.Game = function (game) {
 						return;
 					}
 					if ( !this._attackDown && attack) {
-						console.log("Pressed attack");
-						if ( roundTimer < 400 ) {
+						console.log("Pressed attack", roundTimer, game.roundTime * game.timeThreshold );
+						if ( roundTimer < game.roundTime * game.timeThreshold ) {
 							this.attackCallback();
 						} else {
 							this.fizzle();
@@ -55,7 +58,7 @@ BasicGame.Game = function (game) {
 					this._attackDown = attack;
 					if ( !this._defendDown && defend) {
 						console.log("Pressed defend");
-						if ( roundTimer < 400 ) {
+						if ( roundTimer < game.roundTime * game.timeThreshold ) {
 							this.defendCallback();
 						} else {
 							this.fizzle();
@@ -114,8 +117,8 @@ BasicGame.Game = function (game) {
 			}
 		}
 
-		this.player1 = this.createPlayerObject();
-		this.player2 = this.createPlayerObject();
+		this.player1 = this.createPlayerObject(this);
+		this.player2 = this.createPlayerObject(this);
 };
 
 BasicGame.Game.prototype = {
@@ -131,14 +134,14 @@ BasicGame.Game.prototype = {
 		this.gameObj.player1Stats = this.game.add.text(10, 100, "Hello", style);
 		this.gameObj.player2Stats = this.game.add.text(10, 200, "Hello", style);
 		// this.spriteTopLeft = this.game.add.sprite(0, 0, 'tetris3');
-
+		this.gameObj.graphics = this.game.add.graphics(300, 0);
 	},
 
 	update: function () {
 
 		this.roundTimer -= this.time.elapsed;
 		if ( this.roundTimer <= 0 ) {
-			this.roundTimer += 3000;
+			this.roundTimer += this.roundTime;
 			this.roundUpdate();
 		}
 		//
@@ -153,7 +156,17 @@ BasicGame.Game.prototype = {
 		// if ( this.cursors.left.isDown ) {
 		// 	this.gameObj.screenText.text = "Pressed " + this.time.elapsed;
 		//
-		// }
+		this.gameObj.graphics.clear();
+		this.gameObj.graphics.lineStyle(2, 0xFF0000, 1);
+
+		this.gameObj.graphics.beginFill(0xFF0000, 0.3);
+    this.gameObj.graphics.drawCircle(0, 50, 80 * this.roundTimer / this.roundTime + 20);
+
+		this.gameObj.graphics.lineStyle(0, 0xFF0000, 1);
+		this.gameObj.graphics.beginFill(0x00FF00, 0.4);
+
+		this.gameObj.graphics.drawCircle(0, 50, 80 * (this.roundTime * this.timeThreshold / 2) / this.roundTime + 20);
+
 	},
 
 	roundUpdate: function() {
