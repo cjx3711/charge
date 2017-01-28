@@ -1,0 +1,3 @@
+var AI = function(player) {
+  
+}
