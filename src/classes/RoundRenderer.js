@@ -1,20 +1,19 @@
-var RoundRenderer = function(game, x, y) {
-  var graphics = game.game.add.graphics(x, y);
-
+var RoundRenderer = function(game) {
+  var canvas = game.game.add.graphics(0, 0);
+  var size = 140;
+  var minSize = 30;
   return {
-    _game: game,
-    _g: graphics,
-    render: function() {
-      this._g.clear();
-      this._g.lineStyle(2, 0xFF0000, 1);
+    render: function(x, y) {
+      canvas.clear();
+      canvas.lineStyle(2, 0xFF0000, 1);
 
-      this._g.beginFill(0xFF0000, 0.3);
-      this._g.drawCircle(0, 50, 80 * game.roundTimer / game.roundTime + 20);
+      canvas.beginFill(0xFF0000, 0.3);
+      canvas.drawCircle(0 + x, size/2 + y, (size-minSize) * game.roundTimer / game.roundTime + minSize);
 
-      this._g.lineStyle(0, 0xFF0000, 1);
-      this._g.beginFill(0x00FF00, 0.4);
+      canvas.lineStyle(0, 0xFF0000, 1);
+      canvas.beginFill(0x00FF00, 0.4);
 
-      this._g.drawCircle(0, 50, 80 * (game.roundTime * game.timeThreshold / 2) / game.roundTime + 20);
+      canvas.drawCircle(0 + x, size/2 + y, (size-minSize) * (game.roundTime * game.timeThreshold / 2) / game.roundTime + minSize);
 
     }
   }

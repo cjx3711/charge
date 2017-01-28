@@ -43,45 +43,46 @@ BasicGame.Game.prototype = {
 		console.log("Game create function");
 
 		this.game.stage.backgroundColor = '#000000';
-		//	Honestly, just about anything could go here. It's YOUR game after all. Eat your heart out!
-		this.cursors = this.game.input.keyboard.createCursorKeys();
-		var style = { font: "bold 32px Arial", fill: "#fff" };
-		this.gameObj.screenText = this.game.add.text(10, 10, "Hello", style);
-		this.gameObj.player1Stats = this.game.add.text(10, 100, "Hello", style);
-		this.gameObj.player2Stats = this.game.add.text(10, 200, "Hello", style);
-		// this.spriteTopLeft = this.game.add.sprite(0, 0, 'tetris3');
-
 		this.player1 = Player(this);
 		this.player2 = Player(this);
 
-		this.roundRenderer = RoundRenderer(this, 300, 0)
+		this.roundRenderer = RoundRenderer(this);
+
+		var style = { font: "bold 18px Arial", fill: "#fff" };
+		this.gameObj.screenText = this.game.add.text(10, 10, "Attack: A\nDefend: D", style);
+		this.gameObj.player1Stats = this.game.add.text(500, 10, "Attack: ←\nDefend: →", style);
 	},
 
 	update: function () {
 
 		this.roundTimer -= this.time.elapsed;
 		if ( this.roundTimer <= 0 ) {
+			if ( this.roundTimer <= - this.roundTime ) {
+				this.roundTimer = 0;
+			}
 			this.roundTimer += this.roundTime;
 			this.roundUpdate();
 		}
-		//
-		var displayTime = parseInt(this.roundTimer / 100) / 10;
-		this.gameObj.screenText.text = "Time: " + displayTime;
 
-		this.gameObj.player1Stats.text = this.player1.getStats();
-		this.gameObj.player2Stats.text = this.player2.getStats();
-
-		this.player1.buttonHandler(this.cursors.left.isDown, this.cursors.up.isDown, this.roundTimer);
-		//	Honestly, just about anything could go here. It's YOUR game after all. Eat your heart out!
-		// if ( this.cursors.left.isDown ) {
-		// 	this.gameObj.screenText.text = "Pressed " + this.time.elapsed;
-		//
-		this.roundRenderer.render();
+		this.player2.buttonHandler(
+			this.game.input.keyboard.isDown(Phaser.Keyboard.LEFT),
+			this.game.input.keyboard.isDown(Phaser.Keyboard.RIGHT),
+			this.roundTimer);
+		this.player1.buttonHandler(
+			this.game.input.keyboard.isDown(Phaser.Keyboard.A),
+			this.game.input.keyboard.isDown(Phaser.Keyboard.S),
+			this.roundTimer);
+		this.roundRenderer.render(300, 50);
+		this.player1.render(10, 100);
+		this.player2.render(500, 100);
 	},
 
 	roundUpdate: function() {
 		this.player1.roundUpdate(this.player2);
 		this.player2.roundUpdate(this.player1);
+
+		this.player1.roundPostUpdate();
+		this.player2.roundPostUpdate();
 	},
 
 	quitGame: function (pointer) {
