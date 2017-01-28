@@ -33,9 +33,84 @@ BasicGame.Game = function (game) {
 			return {
 				charge : 0,
 				health: 3,
+				mode: 0,
+				fizzled: false,
+				_attackDown: false,
+				_defendDown: false,
 				getStats: function() {
-					return this.charge + "\n" + this.health;
+					return "Charge: " + this.charge + "\nHealth: " + this.health;
+				},
+				buttonHandler: function(attack, defend, roundTimer) {
+					if ( this.fizzled ) {
+						return;
+					}
+					if ( !this._attackDown && attack) {
+						console.log("Pressed attack");
+						if ( roundTimer < 400 ) {
+							this.attackCallback();
+						} else {
+							this.fizzle();
+						}
+					}
+					this._attackDown = attack;
+					if ( !this._defendDown && defend) {
+						console.log("Pressed defend");
+						if ( roundTimer < 400 ) {
+							this.defendCallback();
+						} else {
+							this.fizzle();
+						}
+					}
+					this._defendDown = defend;
+				},
+				attackCallback: function() {
+					if( this.mode == 0 ) {
+						this.mode = 1;
+						console.log("Attack Fired");
+					} else {
+						this.fizzle();
+					}
+					this.mode = 1;
+				},
+				defendCallback: function() {
+					if ( this.mode == 0 ) {
+						this.mode = 2;
+						console.log("Defend Fired");
+					} else {
+						this.fizzle();
+					}
+				},
+				fizzle: function() {
+					console.log("Fizzled");
+					this.fizzled = true;
+					this.mode = 0;
+				},
+				/**
+				 * Updates the player each round.
+				 * @method roundUpdate
+				 * @param  Player    enemy Enemy player object
+				 */
+				roundUpdate: function(enemy) {
+					switch(this.mode) {
+						case 0: // Charge
+							this.charge += 1;
+							if ( this.charge > 3 ) {
+								this.charge = 1;
+							}
+						break;
+						case 1: // Attack
+							enemy.health -= this.charge;
+							this.charge = 0;
+						break;
+						case 2: // Defend
+
+						break;
+					}
+
+					this.mode = 0;
+					this.fizzled = false;
 				}
+
 			}
 		}
 
@@ -64,19 +139,26 @@ BasicGame.Game.prototype = {
 		this.roundTimer -= this.time.elapsed;
 		if ( this.roundTimer <= 0 ) {
 			this.roundTimer += 3000;
+			this.roundUpdate();
 		}
 		//
-		var displayTime = parseInt(this.roundTimer / 1000);
+		var displayTime = parseInt(this.roundTimer / 100) / 10;
 		this.gameObj.screenText.text = "Time: " + displayTime;
 
 		this.gameObj.player1Stats.text = this.player1.getStats();
 		this.gameObj.player2Stats.text = this.player2.getStats();
-		// this.screenText.text = "afsas";
+
+		this.player1.buttonHandler(this.cursors.left.isDown, this.cursors.up.isDown, this.roundTimer);
 		//	Honestly, just about anything could go here. It's YOUR game after all. Eat your heart out!
 		// if ( this.cursors.left.isDown ) {
 		// 	this.gameObj.screenText.text = "Pressed " + this.time.elapsed;
 		//
 		// }
+	},
+
+	roundUpdate: function() {
+		this.player1.roundUpdate(this.player2);
+		this.player2.roundUpdate(this.player1);
 	},
 
 	quitGame: function (pointer) {
