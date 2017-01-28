@@ -51,6 +51,15 @@ BasicGame.Game.prototype = {
 		var style = { font: "bold 18px Arial", fill: "#fff" };
 		this.gameObj.screenText = this.game.add.text(10, 10, "Attack: A\nDefend: D", style);
 		this.gameObj.player1Stats = this.game.add.text(500, 10, "Attack: ←\nDefend: →", style);
+		var style = { font: "14px Arial", fill: "#fff" };
+
+		this.gameObj.screenText = this.game.add.text(10, 250, "", style);
+		this.gameObj.screenText.text += "Charge v a0.1\n";
+		this.gameObj.screenText.text += "Instructions:\n";
+		this.gameObj.screenText.text += "Attack or Defend when the red circle touches the green one.\n";
+		this.gameObj.screenText.text += "Attacking will deal damage based on the charge\n";
+		this.gameObj.screenText.text += "Defending requires 1 charge and will block all attacks\n";
+		this.gameObj.screenText.text += "If you overcharge, you will lose all the charges\n";
 	},
 
 	update: function () {
