@@ -22,7 +22,25 @@ BasicGame.Game = function (game) {
 
     //	You can use any of these from any function within this State.
     //	But do consider them as being 'reserved words', i.e. don't create a property for your own game called "world" or you'll over-write the world reference.
+		this.roundTimer = 3000;
+		this.gameObj = {
+			screenText: null,
+			player1Stats: null,
+			player2Stats: null
+		}
 
+		this.createPlayerObject = function() {
+			return {
+				charge : 0,
+				health: 3,
+				getStats: function() {
+					return this.charge + "\n" + this.health;
+				}
+			}
+		}
+
+		this.player1 = this.createPlayerObject();
+		this.player2 = this.createPlayerObject();
 };
 
 BasicGame.Game.prototype = {
@@ -34,19 +52,31 @@ BasicGame.Game.prototype = {
 		//	Honestly, just about anything could go here. It's YOUR game after all. Eat your heart out!
 		this.cursors = this.game.input.keyboard.createCursorKeys();
 		var style = { font: "bold 32px Arial", fill: "#fff" };
-		this.screenText = this.game.add.text(10, 10, "Hello", style);
+		this.gameObj.screenText = this.game.add.text(10, 10, "Hello", style);
+		this.gameObj.player1Stats = this.game.add.text(10, 100, "Hello", style);
+		this.gameObj.player2Stats = this.game.add.text(10, 200, "Hello", style);
 		// this.spriteTopLeft = this.game.add.sprite(0, 0, 'tetris3');
 
 	},
 
 	update: function () {
 
-		this.screenText.text = "Not pressed";
-		//	Honestly, just about anything could go here. It's YOUR game after all. Eat your heart out!
-		if ( this.cursors.left.isDown ) {
-			this.screenText.text = "Pressed";
-
+		this.roundTimer -= this.time.elapsed;
+		if ( this.roundTimer <= 0 ) {
+			this.roundTimer += 3000;
 		}
+		//
+		var displayTime = parseInt(this.roundTimer / 1000);
+		this.gameObj.screenText.text = "Time: " + displayTime;
+
+		this.gameObj.player1Stats.text = this.player1.getStats();
+		this.gameObj.player2Stats.text = this.player2.getStats();
+		// this.screenText.text = "afsas";
+		//	Honestly, just about anything could go here. It's YOUR game after all. Eat your heart out!
+		// if ( this.cursors.left.isDown ) {
+		// 	this.gameObj.screenText.text = "Pressed " + this.time.elapsed;
+		//
+		// }
 	},
 
 	quitGame: function (pointer) {
