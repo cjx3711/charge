@@ -39,19 +39,24 @@ BasicGame.Game.prototype = {
 
 	create: function () {
 		console.log("Game create function");
-		this.bg = this.add.sprite(0,0,'background');
+		this.bg = this.add.sprite(0,-50,'background');
 		this.game.stage.backgroundColor = '#000000';
 		this.player1 = Player(this);
 		this.player2 = Player(this);
 
 		this.roundRenderer = RoundRenderer(this);
 
-		var style = { font: "bold 5px Arial", fill: "#fff" };
-		this.gameObj.screenText = this.game.add.text(2, 2, "Attack: A\nDefend: D", style);
-		this.gameObj.player1Stats = this.game.add.text(150, 2, "Attack: ←\nDefend: →", style);
+		var style = { font: "6px Arial", fill: "#fff" };
+		this.gameObj.player1Stats = this.game.add.text(2, 2, "Attack: A\nDefend: D", style);
+		this.gameObj.player2Stats = this.game.add.text(160, 2, "Attack: ←\nDefend: →", style);
+		this.gameObj.player1Stats.lineSpacing = -5;
+		this.gameObj.player2Stats.lineSpacing = -5;
+
 		var style = { font: "5px Arial", fill: "#fff" };
 
-		this.gameObj.screenText = this.game.add.text(2, 90, "", style);
+		this.gameObj.screenText = this.game.add.text(2, 85, "", style);
+		this.gameObj.screenText.lineSpacing = -5;
+
 		this.gameObj.screenText.text += "Charge v a0.1\n";
 		this.gameObj.screenText.text += "Instructions:\n";
 		this.gameObj.screenText.text += "Attack or Defend when the red circle touches the green one.\n";
@@ -82,10 +87,10 @@ BasicGame.Game.prototype = {
 			this.game.input.keyboard.isDown(Phaser.Keyboard.A),
 			this.game.input.keyboard.isDown(Phaser.Keyboard.D),
 			this.roundTimer);
-			
-		this.roundRenderer.render(80, 15);
-		this.player1.render(2, 28);
-		this.player2.render(150, 28);
+
+		this.roundRenderer.render(100, 40);
+		this.player1.render(2, 37);
+		this.player2.render(175, 37);
 	},
 
 	roundUpdate: function() {

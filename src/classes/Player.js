@@ -5,9 +5,10 @@ var MODE = {
   DEFEND: 2
 }
 var Player = function(game) {
-  var canvas = game.game.add.graphics(0, 0);
-  var style = { font: "5px Arial", fill: "#fff" };
+  var style = { font: "5px Arial", fill: "#bbb" };
   var modeText = game.game.add.text(2, 2, "Text", style);
+  modeText.lineSpacing = -5;
+
   var charge_tower = game.game.add.sprite(0, 0, 'charge_tower');
   var sprites = {
     charge_tower: charge_tower,
@@ -40,6 +41,7 @@ var Player = function(game) {
     attackStrength: 0,
     attackType: '',
     attackDissipate: 0,
+    defendFailed: false,
     fizzled: false,
     _attackDown: false,
     _defendDown: false,
@@ -117,7 +119,6 @@ var Player = function(game) {
                 this.attackType = 'blocked';
               }
             break;
-
           }
         break;
       }
@@ -141,7 +142,10 @@ var Player = function(game) {
           this.overcharge = 0;
         break;
         case MODE.DEFEND: // Defend
-          this.charge -= 1;
+          this.defendFailed = this.charge == 0;
+          if ( this.charge > 0 ) {
+            this.charge -= 1;
+          }
           this.overcharge = 0;
         break;
       }
@@ -197,42 +201,21 @@ var Player = function(game) {
       }
     },
     render: function(x, y) {
-      canvas.clear();
-      // Old stuff
-      var chargeColour = 0xFFFF00;
-      var overchargeColour = 0xFF0000;
-      var overchargePerc = this.overcharge / 3;
-      var chargeColour = chargeColour * (1-overchargePerc) + overchargeColour * overchargePerc;
-      for ( var i = 0 ; i < this.charge; i++ ) {
-        canvas.beginFill(chargeColour, 1);
-        canvas.drawCircle(x + 4 + i * 10, y , 8);
-      }
-
-      var i = 0;
-      var healthCountdown = this.health;
-      while ( this.health > 0 ) {
-        canvas.beginFill(0x22FF44, 0.4);
-        canvas.lineStyle(1, 0x22FF44, 1);
-
-        if ( healthCountdown == 1 ) {
-          canvas.beginFill(0x000000, 0);
-        }
-        canvas.drawCircle(x + 4 + i * 10, y + 10, 8);
-        healthCountdown -= 2;
-
-        if ( healthCountdown <= 0 ) {
-          break;
-        }
-        i++;
-      }
-
       modeText.x = x;
-      modeText.y = y + 20;
+      modeText.y = y + 30;
 
       sprites.shield.visible = false;
       sprites.shot[0].visible = false;
       sprites.shot[1].visible = false;
       sprites.shot[2].visible = false;
+
+      for ( var i = 0; i < 3; i++ ) {
+        sprites.heart[i].visible = i < Math.ceil(this.health / 2);
+        sprites.heart[i].frame = i < Math.floor(this.health / 2) ? 0 : 1;
+      }
+
+
+
 
       switch ( this.lastMode ) {
         case -1:
@@ -247,13 +230,13 @@ var Player = function(game) {
           break;
         case 2:
           modeText.text = "Defend";
-          sprites.shield.visible = true;
+          sprites.shield.visible = !this.defendFailed;
           break;
       }
       modeText.text += "\nWins: " + this.winCount;
 
-      sprites.charge_tower.x = x + 15;
-      sprites.charge_tower.y = y + 20;
+      sprites.charge_tower.x = x;
+      sprites.charge_tower.y = y;
 
 
       for ( var i = 0 ; i < 3; i++ ) {
