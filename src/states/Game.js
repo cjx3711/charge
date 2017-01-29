@@ -33,6 +33,7 @@ BasicGame.Game = function (game) {
 		}
 
 
+
 };
 
 BasicGame.Game.prototype = {
@@ -40,6 +41,10 @@ BasicGame.Game.prototype = {
 	create: function () {
 		console.log("Game create function");
 		this.bg = this.add.sprite(0, -40,'background');
+
+		this.tempbeep = this.add.audio('temp_beep');
+		this.tempbeep.volume = 0.2;
+
 		this.game.stage.backgroundColor = '#000000';
 		this.player1 = Player(this, true);
 		this.player2 = Player(this);
@@ -82,6 +87,12 @@ BasicGame.Game.prototype = {
 	update: function () {
 
 		this.roundTimer -= this.time.elapsed;
+		if ( this.roundTimer < this.roundTime * this.timeThreshold * 0.5 ) {
+			if ( !this.audioPlayed ) {
+				this.tempbeep.play();
+				this.audioPlayed = true;
+			}
+		}
 		if ( this.roundTimer <= 0 ) {
 			if ( this.roundTimer <= - this.roundTime ) {
 				this.roundTimer = 0;
@@ -116,6 +127,7 @@ BasicGame.Game.prototype = {
 		this.player1.roundPostUpdate();
 		this.player2.roundPostUpdate();
 
+		this.audioPlayed = false;
 
 
 		if ( this.win > 0 ) {

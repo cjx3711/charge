@@ -14,8 +14,6 @@ var RoundRenderer = function(game) {
       canvas.lineStyle(1, 0x4adeb6, 1);
       canvas.beginFill(0x4adeb6, 0.1 + 0.6 *  (1 - (game.roundTimer / game.roundTime)));
       canvas.drawCircle(0 + x, size/2 + y, (size-minSize) * game.roundTimer / game.roundTime + minSize);
-
-
     }
   }
 }

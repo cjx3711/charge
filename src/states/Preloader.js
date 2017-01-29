@@ -43,6 +43,8 @@ BasicGame.Preloader.prototype = {
 		this.load.spritesheet('win_text', 'assets/sprites/win_sprite.png', 76, 9, 2);
     this.load.image('background', 'assets/background.png');
 
+		this.load.audio('temp_beep', 'assets/audio/temp_beep.mp3');
+
 	},
 
 	create: function () {
