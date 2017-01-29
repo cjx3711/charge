@@ -82,6 +82,7 @@ BasicGame.Game.prototype = {
 			this.game.input.keyboard.isDown(Phaser.Keyboard.A),
 			this.game.input.keyboard.isDown(Phaser.Keyboard.D),
 			this.roundTimer);
+			
 		this.roundRenderer.render(80, 15);
 		this.player1.render(2, 28);
 		this.player2.render(150, 28);

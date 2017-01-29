@@ -29,7 +29,7 @@ var Player = function(game) {
     ],
     shield: charge_tower.addChild(game.game.make.sprite(-37, -12, 'shield')),
     shield_base: charge_tower.addChild(game.game.make.sprite(-37, 17, 'shield_base')),
-  }
+  };
   return {
     overcharge: 0,
     charge: 0,
@@ -37,6 +37,9 @@ var Player = function(game) {
     mode: 0,
     lastMode: 0,
     winCount: 0,
+    attackStrength: 0,
+    attackType: '',
+    attackDissipate: 0,
     fizzled: false,
     _attackDown: false,
     _defendDown: false,
@@ -92,20 +95,26 @@ var Player = function(game) {
     roundUpdate: function(enemy) {
       switch(this.mode) {
         case MODE.ATTACK: // Attack
+          this.attackStrength = this.charge;
           switch (enemy.mode) {
             case MODE.FIZZ:
             case MODE.CHARGE:
               enemy.health -= this.charge;
+              this.attackType = 'hit';
             break;
             case MODE.ATTACK:
+              this.attackType = 'dissipated';
               var chargeDiff = this.charge - enemy.charge;
               if ( chargeDiff > 0 ) {
                 enemy.health -= chargeDiff;
+                this.attackDissipate = enemy.charge;
               }
             break;
             case MODE.DEFEND:
               if ( enemy.charge <= 0 ) {
                 enemy.health -= this.charge;
+              } else {
+                this.attackType = 'blocked';
               }
             break;
 
@@ -150,6 +159,42 @@ var Player = function(game) {
       this.health = 6;
       this.mode = MODE.CHARGE;
       this.lastMode = 0;
+      this.attackStrength =  0;
+      this.attackType =  '';
+      this.attackDissipate =  0;
+    },
+    setShotSprites: function( charge ) {
+      switch ( this.attackType ) {
+        case 'hit':
+          sprites.shot[0].frame = 0;
+          sprites.shot[1].frame = 0;
+          sprites.shot[2].frame = 0;
+        break;
+        case 'blocked':
+          sprites.shot[0].frame = 1;
+          sprites.shot[1].frame = 1;
+          sprites.shot[2].frame = 1;
+        break;
+        case 'dissipated':
+          sprites.shot[0].frame = 2;
+          sprites.shot[1].frame = 2;
+          sprites.shot[2].frame = 2;
+        break;
+      }
+      switch ( charge ) {
+        case 1:
+          sprites.shot[0].visible = true;
+        break;
+        case 2:
+          sprites.shot[2].visible = true;
+          sprites.shot[0].visible = true;
+        break;
+        case 3:
+          sprites.shot[0].visible = true;
+          sprites.shot[1].visible = true;
+          sprites.shot[2].visible = true;
+        break;
+      }
     },
     render: function(x, y) {
       canvas.clear();
@@ -184,6 +229,11 @@ var Player = function(game) {
       modeText.x = x;
       modeText.y = y + 20;
 
+      sprites.shield.visible = false;
+      sprites.shot[0].visible = false;
+      sprites.shot[1].visible = false;
+      sprites.shot[2].visible = false;
+
       switch ( this.lastMode ) {
         case -1:
           modeText.text = "Miss";
@@ -193,9 +243,11 @@ var Player = function(game) {
           break;
         case 1:
           modeText.text = "Attack";
+          this.setShotSprites(this.attackStrength);
           break;
         case 2:
           modeText.text = "Defend";
+          sprites.shield.visible = true;
           break;
       }
       modeText.text += "\nWins: " + this.winCount;
