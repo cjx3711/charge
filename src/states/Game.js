@@ -22,8 +22,8 @@ BasicGame.Game = function (game) {
 
     //	You can use any of these from any function within this State.
     //	But do consider them as being 'reserved words', i.e. don't create a property for your own game called "world" or you'll over-write the world reference.
-		this.roundTime = 1000;
-		this.timeThreshold = 0.15;
+		this.roundTime = 850;
+		this.timeThreshold = 0.25;
 		this.roundTimer = this.roundTime;
 		this.win = 0;
 		this.gameObj = {

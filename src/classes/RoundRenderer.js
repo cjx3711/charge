@@ -5,15 +5,16 @@ var RoundRenderer = function(game) {
   return {
     render: function(x, y) {
       canvas.clear();
-      canvas.lineStyle(1, 0xFF0000, 1);
+      // Small circle
+      canvas.lineStyle(2, 0x033bbb, 1);
+      canvas.beginFill(0x00ffb1, 0);
+      canvas.drawCircle(0 + x, size/2 + y, (size-minSize) * (game.roundTime * game.timeThreshold / 2) / game.roundTime + minSize);
 
-      canvas.beginFill(0xFF0000, 0.3);
+      //Big circle
+      canvas.lineStyle(1, 0x4adeb6, 1);
+      canvas.beginFill(0x4adeb6, 0.1 + 0.6 *  (1 - (game.roundTimer / game.roundTime)));
       canvas.drawCircle(0 + x, size/2 + y, (size-minSize) * game.roundTimer / game.roundTime + minSize);
 
-      canvas.lineStyle(0, 0xFF0000, 1);
-      canvas.beginFill(0x00FF00, 0.4);
-
-      canvas.drawCircle(0 + x, size/2 + y, (size-minSize) * (game.roundTime * game.timeThreshold / 2) / game.roundTime + minSize);
 
     }
   }

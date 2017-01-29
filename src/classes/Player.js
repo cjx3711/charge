@@ -108,7 +108,6 @@ var Player = function(game, flip) {
       }
     },
     fizzle: function() {
-      console.log("Fizzled");
       this.fizzled = true;
       this.mode = MODE.FIZZ;
       this.lastMode = MODE.FIZZ;
@@ -123,28 +122,30 @@ var Player = function(game, flip) {
       switch(this.mode) {
         case MODE.ATTACK: // Attack
           this.attackStrength = this.charge;
-          switch (enemy.mode) {
-            case MODE.FIZZ:
-            case MODE.CHARGE:
-              enemy.health -= this.charge;
-              this.attackType = 'hit';
-            break;
-            case MODE.ATTACK:
-              this.attackType = 'dissipated';
-              var chargeDiff = this.charge - enemy.charge;
-              if ( chargeDiff > 0 ) {
-                enemy.health -= chargeDiff;
-              }
-              this.attackDissipate = enemy.charge;
-            break;
-            case MODE.DEFEND:
-              if ( enemy.charge <= 0 ) {
+          if ( this.charge > 0 ) {
+            switch (enemy.mode) {
+              case MODE.FIZZ:
+              case MODE.CHARGE:
                 enemy.health -= this.charge;
                 this.attackType = 'hit';
-              } else {
-                this.attackType = 'blocked';
-              }
-            break;
+              break;
+              case MODE.ATTACK:
+                this.attackType = 'dissipated';
+                var chargeDiff = this.charge - enemy.charge;
+                if ( chargeDiff > 0 ) {
+                  enemy.health -= chargeDiff;
+                }
+                this.attackDissipate = enemy.charge;
+              break;
+              case MODE.DEFEND:
+                if ( enemy.charge <= 0 ) {
+                  enemy.health -= this.charge;
+                  this.attackType = 'hit';
+                } else {
+                  this.attackType = 'blocked';
+                }
+              break;
+            }
           }
         break;
       }
@@ -176,7 +177,6 @@ var Player = function(game, flip) {
         break;
       }
 
-      console.log(this.charge);
       this.lastMode = this.mode;
       this.mode = MODE.CHARGE;
       this.fizzled = false;
