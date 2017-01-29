@@ -33,7 +33,8 @@ var Player = function(game, flip) {
     ],
     shield: charge_tower.addChild(game.game.make.sprite(-37, -12, 'shield')),
     shield_base: charge_tower.addChild(game.game.make.sprite(-37, 17, 'shield_base')),
-  };;
+    fizzle: game.game.add.sprite(0, 0, 'fizzle')
+  };
   if ( flip ) {
     charge_tower.scale.x = -1;
   }
@@ -209,6 +210,7 @@ var Player = function(game, flip) {
       sprites.shot[0].visible = false;
       sprites.shot[1].visible = false;
       sprites.shot[2].visible = false;
+      sprites.fizzle.visible = false;
 
       for ( var i = 0; i < 3; i++ ) {
         sprites.heart[i].visible = i < Math.ceil(this.health / 2);
@@ -220,24 +222,29 @@ var Player = function(game, flip) {
 
       switch ( this.lastMode ) {
         case -1:
-          modeText.text = "Miss";
+          sprites.fizzle.visible = true;
           break;
         case 0:
-          modeText.text = "Charge";
           break;
         case 1:
-          modeText.text = "Attack";
           this.setShotSprites(this.attackStrength);
           break;
         case 2:
-          modeText.text = "Defend";
           sprites.shield.visible = !this.defendFailed;
           break;
       }
-      modeText.text += "\nWins: " + this.winCount;
+      modeText.text = "Wins: " + this.winCount;
 
       sprites.charge_tower.x = x;
       sprites.charge_tower.y = y;
+
+      if ( flip ) {
+        sprites.fizzle.x = x - 6;
+        sprites.fizzle.y = y - 5;
+      } else {
+        sprites.fizzle.x = x - 6;
+        sprites.fizzle.y = y - 5;
+      }
 
 
       for ( var i = 0 ; i < 3; i++ ) {
