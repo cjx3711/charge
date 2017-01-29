@@ -1,7 +1,7 @@
 var RoundRenderer = function(game) {
   var canvas = game.game.add.graphics(0, 0);
-  var size = 70;
-  var minSize = 10;
+  var size = 65;
+  var minSize = 15;
   return {
     render: function(x, y) {
       canvas.clear();
