@@ -140,6 +140,7 @@ var Player = function(game, flip) {
             case MODE.DEFEND:
               if ( enemy.charge <= 0 ) {
                 enemy.health -= this.charge;
+                this.attackType = 'hit';
               } else {
                 this.attackType = 'blocked';
               }
@@ -191,6 +192,8 @@ var Player = function(game, flip) {
       this.attackStrength =  0;
       this.attackType =  '';
       this.attackDissipate =  0;
+      this.defendFailed = false;
+      this.fizzled = false;
     },
     setShotSprites: function( charge ) {
       switch ( this.attackType ) {
@@ -222,9 +225,9 @@ var Player = function(game, flip) {
         break;
       }
 
-      sprites.turret_hit[0].visible = sprites.shot[0].visible && this.attackDissipate <= 2;
-      sprites.turret_hit[1].visible = sprites.shot[1].visible && this.attackDissipate <= 1;
-      sprites.turret_hit[2].visible = sprites.shot[2].visible && this.attackDissipate <= 0;
+      sprites.turret_hit[0].visible = sprites.shot[0].visible && sprites.shot[0].frame == 0;
+      sprites.turret_hit[1].visible = sprites.shot[1].visible && sprites.shot[1].frame == 0;
+      sprites.turret_hit[2].visible = sprites.shot[2].visible && sprites.shot[2].frame == 0;
     },
     render: function(x, y) {
       modeText.x = x;

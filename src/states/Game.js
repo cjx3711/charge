@@ -25,6 +25,7 @@ BasicGame.Game = function (game) {
 		this.roundTime = 1000;
 		this.timeThreshold = 0.15;
 		this.roundTimer = this.roundTime;
+		this.win = 0;
 		this.gameObj = {
 			screenText: null,
 			player1Stats: null,
@@ -51,6 +52,7 @@ BasicGame.Game.prototype = {
 		this.gameObj.player2Stats = this.game.add.text(160, 2, "Attack: ←\nDefend: →", style);
 		this.gameObj.player1Stats.lineSpacing = -5;
 		this.gameObj.player2Stats.lineSpacing = -5;
+		this.gameObj.winText = this.game.add.text(68, 5, "", { font: "10px Arial", fill: "#fff" });
 
 		var style = { font: "5px Arial", fill: "#fff" };
 
@@ -111,17 +113,25 @@ BasicGame.Game.prototype = {
 		this.player1.roundPostUpdate();
 		this.player2.roundPostUpdate();
 
-		if ( this.player1.health <= 0 ) {
+
+
+		if ( this.win > 0 ) {
 			this.player1.reset();
 			this.player2.reset();
-			this.player2.winCount += 1;
+			this.gameObj.winText.text = "";
 			this.roundTimer = this.roundTime;
 		}
+
+		if ( this.player1.health <= 0 ) {
+			this.player2.winCount += 1;
+			this.win = 2;
+			this.gameObj.winText.text = "Player 2 Wins";
+
+		}
 		if ( this.player2.health <= 0 ) {
-			this.player1.reset();
-			this.player2.reset();
 			this.player1.winCount += 1;
-			this.roundTimer = this.roundTime;
+			this.win = 1;
+			this.gameObj.winText.text = "Player 1 Wins";
 		}
 	},
 
