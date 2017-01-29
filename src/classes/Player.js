@@ -11,11 +11,24 @@ var Player = function(game) {
   var charge_tower = game.game.add.sprite(0, 0, 'charge_tower');
   var sprites = {
     charge_tower: charge_tower,
-    charge_0: [
+    charge: [
       charge_tower.addChild(game.game.make.sprite(9, 17, 'charge')),
       charge_tower.addChild(game.game.make.sprite(9, 17-6, 'charge')),
       charge_tower.addChild(game.game.make.sprite(9, 17-12, 'charge'))
-    ]
+    ],
+    heart: [
+      charge_tower.addChild(game.game.make.sprite(-20, 25, 'heart')),
+      charge_tower.addChild(game.game.make.sprite(-20 + 7, 25, 'heart')),
+      charge_tower.addChild(game.game.make.sprite(-20 + 7 * 2, 25, 'heart'))
+    ],
+    turret: charge_tower.addChild(game.game.make.sprite(-20, 5, 'turret')),
+    shot: [
+      charge_tower.addChild(game.game.make.sprite(-103 - 16, 8 - 2, 'shot')),
+      charge_tower.addChild(game.game.make.sprite(-103 - 17, 8, 'shot')),
+      charge_tower.addChild(game.game.make.sprite(-103 - 16, 8 + 2, 'shot')),
+    ],
+    shield: charge_tower.addChild(game.game.make.sprite(-37, -12, 'shield')),
+    shield_base: charge_tower.addChild(game.game.make.sprite(-37, 17, 'shield_base')),
   }
   return {
     overcharge: 0,
@@ -192,8 +205,8 @@ var Player = function(game) {
 
 
       for ( var i = 0 ; i < 3; i++ ) {
-        sprites.charge_0[i].visible = this.charge > i;
-        sprites.charge_0[i].frame = this.overcharge;
+        sprites.charge[i].visible = this.charge > i;
+        sprites.charge[i].frame = this.overcharge;
       }
 
 
