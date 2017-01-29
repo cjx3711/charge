@@ -41,7 +41,7 @@ BasicGame.Game.prototype = {
 		console.log("Game create function");
 		this.bg = this.add.sprite(0,-50,'background');
 		this.game.stage.backgroundColor = '#000000';
-		this.player1 = Player(this);
+		this.player1 = Player(this, true);
 		this.player2 = Player(this);
 
 		this.roundRenderer = RoundRenderer(this);
@@ -89,8 +89,8 @@ BasicGame.Game.prototype = {
 			this.roundTimer);
 
 		this.roundRenderer.render(100, 40);
-		this.player1.render(2, 37);
-		this.player2.render(175, 37);
+		this.player1.render(30, 37);
+		this.player2.render(170, 37);
 	},
 
 	roundUpdate: function() {

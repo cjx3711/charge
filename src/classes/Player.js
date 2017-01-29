@@ -4,7 +4,10 @@ var MODE = {
   ATTACK: 1,
   DEFEND: 2
 }
-var Player = function(game) {
+var Player = function(game, flip) {
+  if (flip == undefined) {
+    flip = false;
+  }
   var style = { font: "5px Arial", fill: "#bbb" };
   var modeText = game.game.add.text(2, 2, "Text", style);
   modeText.lineSpacing = -5;
@@ -24,13 +27,16 @@ var Player = function(game) {
     ],
     turret: charge_tower.addChild(game.game.make.sprite(-20, 5, 'turret')),
     shot: [
-      charge_tower.addChild(game.game.make.sprite(-103 - 16, 8 - 2, 'shot')),
-      charge_tower.addChild(game.game.make.sprite(-103 - 17, 8, 'shot')),
-      charge_tower.addChild(game.game.make.sprite(-103 - 16, 8 + 2, 'shot')),
+      charge_tower.addChild(game.game.make.sprite(-104 - 16, 8 - 2, 'shot')),
+      charge_tower.addChild(game.game.make.sprite(-104 - 17, 8, 'shot')),
+      charge_tower.addChild(game.game.make.sprite(-104 - 16, 8 + 2, 'shot')),
     ],
     shield: charge_tower.addChild(game.game.make.sprite(-37, -12, 'shield')),
     shield_base: charge_tower.addChild(game.game.make.sprite(-37, 17, 'shield_base')),
-  };
+  };;
+  if ( flip ) {
+    charge_tower.scale.x = -1;
+  }
   return {
     overcharge: 0,
     charge: 0,
@@ -186,16 +192,11 @@ var Player = function(game) {
         break;
       }
       switch ( charge ) {
-        case 1:
-          sprites.shot[0].visible = true;
-        break;
-        case 2:
-          sprites.shot[2].visible = true;
-          sprites.shot[0].visible = true;
-        break;
         case 3:
           sprites.shot[0].visible = true;
+        case 2:
           sprites.shot[1].visible = true;
+        case 1:
           sprites.shot[2].visible = true;
         break;
       }
