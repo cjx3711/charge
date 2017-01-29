@@ -102,6 +102,7 @@ var Player = function(game, flip) {
      * @param  Player    enemy Enemy player object
      */
     roundUpdate: function(enemy) {
+      this.attackDissipate = 0;
       switch(this.mode) {
         case MODE.ATTACK: // Attack
           this.attackStrength = this.charge;
@@ -116,8 +117,8 @@ var Player = function(game, flip) {
               var chargeDiff = this.charge - enemy.charge;
               if ( chargeDiff > 0 ) {
                 enemy.health -= chargeDiff;
-                this.attackDissipate = enemy.charge;
               }
+              this.attackDissipate = enemy.charge;
             break;
             case MODE.DEFEND:
               if ( enemy.charge <= 0 ) {
@@ -187,9 +188,9 @@ var Player = function(game, flip) {
           sprites.shot[2].frame = 1;
         break;
         case 'dissipated':
-          sprites.shot[0].frame = 2;
-          sprites.shot[1].frame = 2;
-          sprites.shot[2].frame = 2;
+          sprites.shot[2].frame = this.attackDissipate > 0 ? 2 : 0;
+          sprites.shot[1].frame = this.attackDissipate > 1 ? 2 : 0;
+          sprites.shot[0].frame = this.attackDissipate > 2 ? 2 : 0;
         break;
       }
       switch ( charge ) {

@@ -29,7 +29,6 @@ BasicGame.Game = function (game) {
 			screenText: null,
 			player1Stats: null,
 			player2Stats: null,
-
 		}
 
 
@@ -65,6 +64,12 @@ BasicGame.Game.prototype = {
 		this.gameObj.screenText.text += "Attacking will deal damage based on the charge\n";
 		this.gameObj.screenText.text += "Defending requires 1 charge and will block all attacks\n";
 		this.gameObj.screenText.text += "If you overcharge, you will lose all the charges\n";
+
+		this.gameObj.dissipate = [
+			this.game.add.sprite(90, 43 + 4, 'dissipate'),
+			this.game.add.sprite(90, 43 + 2, 'dissipate'),
+			this.game.add.sprite(90, 43 , 'dissipate')
+		]
 		// sprite.scale.setTo(4,4);
 	},
 
@@ -91,6 +96,11 @@ BasicGame.Game.prototype = {
 		this.roundRenderer.render(100, 40);
 		this.player1.render(30, 37);
 		this.player2.render(170, 37);
+
+		var dissipate = Math.min(this.player1.attackDissipate, this.player2.attackDissipate);
+		this.gameObj.dissipate[0].visible = dissipate > 0;
+		this.gameObj.dissipate[1].visible = dissipate > 1;
+		this.gameObj.dissipate[2].visible = dissipate > 2;
 	},
 
 	roundUpdate: function() {
