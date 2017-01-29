@@ -59,7 +59,7 @@ BasicGame.Game.prototype = {
 		this.gameObj.screenText = this.game.add.text(2, 85, "", style);
 		this.gameObj.screenText.lineSpacing = -5;
 
-		this.gameObj.screenText.text += "Charge v a0.1\n";
+		this.gameObj.screenText.text += "Charge v a0.2\n";
 		this.gameObj.screenText.text += "Instructions:\n";
 		this.gameObj.screenText.text += "Attack or Defend when the red circle touches the green one.\n";
 		this.gameObj.screenText.text += "   - If you miss, nothing happens for the round\n";
@@ -116,6 +116,7 @@ BasicGame.Game.prototype = {
 
 
 		if ( this.win > 0 ) {
+			this.win = 0;
 			this.player1.reset();
 			this.player2.reset();
 			this.gameObj.winText.text = "";

@@ -176,6 +176,7 @@ var Player = function(game, flip) {
         break;
       }
 
+      console.log(this.charge);
       this.lastMode = this.mode;
       this.mode = MODE.CHARGE;
       this.fizzled = false;
