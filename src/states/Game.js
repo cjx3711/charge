@@ -42,7 +42,8 @@ BasicGame.Game.prototype = {
 		this.game.stage.backgroundColor = '#000000';
 		this.player1 = Player(this, true);
 		this.player2 = Player(this);
-
+		this.player1.initHitSprites();
+		this.player2.initHitSprites();
 		this.roundRenderer = RoundRenderer(this);
 
 		var style = { font: "6px Arial", fill: "#fff" };

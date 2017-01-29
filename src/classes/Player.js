@@ -13,8 +13,10 @@ var Player = function(game, flip) {
   modeText.lineSpacing = -5;
 
   var charge_tower = game.game.add.sprite(0, 0, 'charge_tower');
+
   var sprites = {
     charge_tower: charge_tower,
+    hit_sprites: null,
     charge: [
       charge_tower.addChild(game.game.make.sprite(9, 17, 'charge')),
       charge_tower.addChild(game.game.make.sprite(9, 17-6, 'charge')),
@@ -33,6 +35,8 @@ var Player = function(game, flip) {
     ],
     shield: charge_tower.addChild(game.game.make.sprite(-37, -12, 'shield')),
     shield_base: charge_tower.addChild(game.game.make.sprite(-37, 17, 'shield_base')),
+    shield_hit: null,
+    turret_hit: null,
     fizzle: game.game.add.sprite(0, 0, 'fizzle')
   };
   if ( flip ) {
@@ -52,6 +56,19 @@ var Player = function(game, flip) {
     fizzled: false,
     _attackDown: false,
     _defendDown: false,
+    initHitSprites: function() {
+      var hit_sprites = game.game.add.sprite(0, 0 , '');
+      if ( flip ) {
+        hit_sprites.scale.x = -1;
+      }
+      sprites.hit_sprites = hit_sprites;
+      sprites.turret_hit = [
+        hit_sprites.addChild(game.game.make.sprite(-133, 2 , 'turret_hit')),
+        hit_sprites.addChild(game.game.make.sprite(-133, 2 + 2 , 'turret_hit')),
+        hit_sprites.addChild(game.game.make.sprite(-133, 2 + 4, 'turret_hit'))
+      ];
+      sprites.shield_hit = hit_sprites.addChild(game.game.make.sprite(-107, 3, 'shield_hit'));
+    },
     getStats: function() {
       return "Charge: " + this.charge + "\nHealth: " + this.health;
     },
@@ -186,6 +203,7 @@ var Player = function(game, flip) {
           sprites.shot[0].frame = 1;
           sprites.shot[1].frame = 1;
           sprites.shot[2].frame = 1;
+          sprites.shield_hit.visible = true;
         break;
         case 'dissipated':
           sprites.shot[2].frame = this.attackDissipate > 0 ? 2 : 0;
@@ -193,6 +211,7 @@ var Player = function(game, flip) {
           sprites.shot[0].frame = this.attackDissipate > 2 ? 2 : 0;
         break;
       }
+
       switch ( charge ) {
         case 3:
           sprites.shot[0].visible = true;
@@ -202,6 +221,10 @@ var Player = function(game, flip) {
           sprites.shot[2].visible = true;
         break;
       }
+
+      sprites.turret_hit[0].visible = sprites.shot[0].visible && this.attackDissipate <= 2;
+      sprites.turret_hit[1].visible = sprites.shot[1].visible && this.attackDissipate <= 1;
+      sprites.turret_hit[2].visible = sprites.shot[2].visible && this.attackDissipate <= 0;
     },
     render: function(x, y) {
       modeText.x = x;
@@ -211,7 +234,11 @@ var Player = function(game, flip) {
       sprites.shot[0].visible = false;
       sprites.shot[1].visible = false;
       sprites.shot[2].visible = false;
+      sprites.turret_hit[0].visible = false;
+      sprites.turret_hit[1].visible = false;
+      sprites.turret_hit[2].visible = false;
       sprites.fizzle.visible = false;
+      sprites.shield_hit.visible = false;
 
       for ( var i = 0; i < 3; i++ ) {
         sprites.heart[i].visible = i < Math.ceil(this.health / 2);
@@ -222,15 +249,15 @@ var Player = function(game, flip) {
 
 
       switch ( this.lastMode ) {
-        case -1:
+        case MODE.FIZZ:
           sprites.fizzle.visible = true;
           break;
-        case 0:
+        case MODE.CHARGE:
           break;
-        case 1:
+        case MODE.ATTACK:
           this.setShotSprites(this.attackStrength);
           break;
-        case 2:
+        case MODE.DEFEND:
           sprites.shield.visible = !this.defendFailed;
           break;
       }
@@ -238,6 +265,8 @@ var Player = function(game, flip) {
 
       sprites.charge_tower.x = x;
       sprites.charge_tower.y = y;
+      sprites.hit_sprites.x = x;
+      sprites.hit_sprites.y = y;
 
       if ( flip ) {
         sprites.fizzle.x = x - 6;
