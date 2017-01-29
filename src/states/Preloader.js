@@ -41,7 +41,7 @@ BasicGame.Preloader.prototype = {
 		this.load.spritesheet('charge', 'assets/sprites/charge_sprite.png', 8, 4, 4);
 		this.load.spritesheet('heart', 'assets/sprites/heart_sprite.png', 5, 5, 2);
 		this.load.spritesheet('win_text', 'assets/sprites/win_sprite.png', 76, 9, 2);
-    this.load.image('background', 'assets/background.jpg');
+    this.load.image('background', 'assets/background.png');
 
 	},
 
