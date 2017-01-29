@@ -25,14 +25,12 @@ BasicGame.Game = function (game) {
 		this.roundTime = 1000;
 		this.timeThreshold = 0.15;
 		this.roundTimer = this.roundTime;
+		this.win = 0;
 		this.gameObj = {
 			screenText: null,
 			player1Stats: null,
 			player2Stats: null,
-
 		}
-
-
 
 
 };
@@ -41,20 +39,27 @@ BasicGame.Game.prototype = {
 
 	create: function () {
 		console.log("Game create function");
-
+		this.bg = this.add.sprite(0,-50,'background');
 		this.game.stage.backgroundColor = '#000000';
-		this.player1 = Player(this);
+		this.player1 = Player(this, true);
 		this.player2 = Player(this);
-
+		this.player1.initHitSprites();
+		this.player2.initHitSprites();
 		this.roundRenderer = RoundRenderer(this);
 
-		var style = { font: "bold 18px Arial", fill: "#fff" };
-		this.gameObj.screenText = this.game.add.text(10, 10, "Attack: A\nDefend: D", style);
-		this.gameObj.player1Stats = this.game.add.text(500, 10, "Attack: ←\nDefend: →", style);
-		var style = { font: "14px Arial", fill: "#fff" };
+		var style = { font: "6px Arial", fill: "#fff" };
+		this.gameObj.player1Stats = this.game.add.text(2, 2, "Attack: A\nDefend: D", style);
+		this.gameObj.player2Stats = this.game.add.text(160, 2, "Attack: ←\nDefend: →", style);
+		this.gameObj.player1Stats.lineSpacing = -5;
+		this.gameObj.player2Stats.lineSpacing = -5;
+		this.gameObj.winText = this.game.add.text(68, 5, "", { font: "10px Arial", fill: "#fff" });
 
-		this.gameObj.screenText = this.game.add.text(10, 250, "", style);
-		this.gameObj.screenText.text += "Charge v a0.1\n";
+		var style = { font: "5px Arial", fill: "#fff" };
+
+		this.gameObj.screenText = this.game.add.text(2, 85, "", style);
+		this.gameObj.screenText.lineSpacing = -5;
+
+		this.gameObj.screenText.text += "Charge v a0.2\n";
 		this.gameObj.screenText.text += "Instructions:\n";
 		this.gameObj.screenText.text += "Attack or Defend when the red circle touches the green one.\n";
 		this.gameObj.screenText.text += "   - If you miss, nothing happens for the round\n";
@@ -62,6 +67,13 @@ BasicGame.Game.prototype = {
 		this.gameObj.screenText.text += "Attacking will deal damage based on the charge\n";
 		this.gameObj.screenText.text += "Defending requires 1 charge and will block all attacks\n";
 		this.gameObj.screenText.text += "If you overcharge, you will lose all the charges\n";
+
+		this.gameObj.dissipate = [
+			this.game.add.sprite(90, 43 + 4, 'dissipate'),
+			this.game.add.sprite(90, 43 + 2, 'dissipate'),
+			this.game.add.sprite(90, 43 , 'dissipate')
+		]
+		// sprite.scale.setTo(4,4);
 	},
 
 	update: function () {
@@ -83,9 +95,15 @@ BasicGame.Game.prototype = {
 			this.game.input.keyboard.isDown(Phaser.Keyboard.A),
 			this.game.input.keyboard.isDown(Phaser.Keyboard.D),
 			this.roundTimer);
-		this.roundRenderer.render(300, 50);
-		this.player1.render(10, 100);
-		this.player2.render(500, 100);
+
+		this.roundRenderer.render(100, 40);
+		this.player1.render(30, 37);
+		this.player2.render(170, 37);
+
+		var dissipate = Math.min(this.player1.attackDissipate, this.player2.attackDissipate);
+		this.gameObj.dissipate[0].visible = dissipate > 0;
+		this.gameObj.dissipate[1].visible = dissipate > 1;
+		this.gameObj.dissipate[2].visible = dissipate > 2;
 	},
 
 	roundUpdate: function() {
@@ -95,17 +113,26 @@ BasicGame.Game.prototype = {
 		this.player1.roundPostUpdate();
 		this.player2.roundPostUpdate();
 
-		if ( this.player1.health <= 0 ) {
+
+
+		if ( this.win > 0 ) {
+			this.win = 0;
 			this.player1.reset();
 			this.player2.reset();
-			this.player2.winCount += 1;
+			this.gameObj.winText.text = "";
 			this.roundTimer = this.roundTime;
 		}
+
+		if ( this.player1.health <= 0 ) {
+			this.player2.winCount += 1;
+			this.win = 2;
+			this.gameObj.winText.text = "Player 2 Wins";
+
+		}
 		if ( this.player2.health <= 0 ) {
-			this.player1.reset();
-			this.player2.reset();
 			this.player1.winCount += 1;
-			this.roundTimer = this.roundTime;
+			this.win = 1;
+			this.gameObj.winText.text = "Player 1 Wins";
 		}
 	},
 
