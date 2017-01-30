@@ -11,7 +11,6 @@ BasicGame.Preloader = function (game) {
 BasicGame.Preloader.prototype = {
 
 	preload: function () {
-		console.log("Preloader preload function");
 		//	These are the assets we loaded in Boot.js
 		//	A nice sparkly background and a loading progress bar
 
@@ -27,11 +26,24 @@ BasicGame.Preloader.prototype = {
 		//	Here we load the rest of the assets our game needs.
 		//	You can find all of these assets in the Phaser Examples repository
 
-    // this.load.image('tetris1', 'assets/sprites/tetrisblock1.png');
-    // this.load.image('tetris2', 'assets/sprites/tetrisblock2.png');
-    // this.load.image('tetris3', 'assets/sprites/tetrisblock3.png');
-    // this.load.image('hotdog', 'assets/sprites/hotdog.png');
-    // this.load.image('starfield', 'assets/skies/deep-space.jpg');
+		this.load.image('charge_tower', 'assets/sprites/charge_tower.png');
+		this.load.image('shield_base', 'assets/sprites/shield_base.png');
+		this.load.image('shield', 'assets/sprites/shield.png');
+		this.load.image('turret', 'assets/sprites/turret.png');
+		this.load.image('wins_text', 'assets/sprites/wins.png');
+		this.load.image('fizzle', 'assets/sprites/fizzle.png');
+		this.load.image('dissipate', 'assets/sprites/dissipate.png');
+		this.load.image('turret_hit', 'assets/sprites/turret_hit.png');
+		this.load.image('shield_hit', 'assets/sprites/shield_hit.png');
+		this.load.image('player1controls', 'assets/sprites/player1controls.png');
+		this.load.image('player2controls', 'assets/sprites/player2controls.png');
+		this.load.spritesheet('shot', 'assets/sprites/shot_sprite.png', 104, 5, 3);
+		this.load.spritesheet('charge', 'assets/sprites/charge_sprite.png', 8, 4, 4);
+		this.load.spritesheet('heart', 'assets/sprites/heart_sprite.png', 5, 5, 2);
+		this.load.spritesheet('win_text', 'assets/sprites/win_sprite.png', 76, 9, 2);
+    this.load.image('background', 'assets/background.png');
+
+		this.load.audio('temp_beep', 'assets/audio/temp_beep.mp3');
 
 	},
 
