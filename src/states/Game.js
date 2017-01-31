@@ -23,7 +23,7 @@ BasicGame.Game = function (game) {
     //	You can use any of these from any function within this State.
     //	But do consider them as being 'reserved words', i.e. don't create a property for your own game called "world" or you'll over-write the world reference.
 		this.roundTime = 850;
-		this.timeThreshold = 0.25;
+		this.timeThreshold = 0.35;
 		this.roundTimer = this.roundTime;
 		this.win = 0;
 		this.gameObj = {
@@ -48,8 +48,10 @@ BasicGame.Game.prototype = {
 		this.game.stage.backgroundColor = '#000000';
 		this.player1 = Player(this, true);
 		this.player2 = Player(this);
-		this.player1.initHitSprites();
-		this.player2.initHitSprites();
+    this.player1.initBaseSprites();
+    this.player2.initBaseSprites();
+		this.player1.initEffectSprites();
+		this.player2.initEffectSprites();
 		this.roundRenderer = RoundRenderer(this);
 
 		var style = { font: "6px Arial", fill: "#fff" };
