@@ -4,40 +4,12 @@ var Player = function(game, flip) {
   if (flip == undefined) {
     flip = false;
   }
+
+  var spriteHandler = PlayerSprites(game.game, flip);
+
   var style = { font: "5px Arial", fill: "#bbb" };
-  var modeText = game.game.add.text(2, 2, "Text", style);
-  modeText.lineSpacing = -5;
+  var winsText = game.game.add.text(2, 2, "Text", style);
 
-  var charge_tower = game.game.add.sprite(0, 0, 'charge_tower');
-
-  var sprites = {
-    charge_tower: charge_tower,
-    hit_sprites: null,
-    charge: [
-      charge_tower.addChild(game.game.make.sprite(9, 17, 'charge')),
-      charge_tower.addChild(game.game.make.sprite(9, 17-6, 'charge')),
-      charge_tower.addChild(game.game.make.sprite(9, 17-12, 'charge'))
-    ],
-    heart: [
-      charge_tower.addChild(game.game.make.sprite(-20, 25, 'heart')),
-      charge_tower.addChild(game.game.make.sprite(-20 + 7, 25, 'heart')),
-      charge_tower.addChild(game.game.make.sprite(-20 + 7 * 2, 25, 'heart'))
-    ],
-    turret: charge_tower.addChild(game.game.make.sprite(-20, 5, 'turret')),
-    shot: [
-      charge_tower.addChild(game.game.make.sprite(-104 - 16, 8 - 2, 'shot')),
-      charge_tower.addChild(game.game.make.sprite(-104 - 17, 8, 'shot')),
-      charge_tower.addChild(game.game.make.sprite(-104 - 16, 8 + 2, 'shot')),
-    ],
-    shield: charge_tower.addChild(game.game.make.sprite(-37, -12, 'shield')),
-    shield_base: charge_tower.addChild(game.game.make.sprite(-37, 17, 'shield_base')),
-    shield_hit: null,
-    turret_hit: null,
-    fizzle: game.game.add.sprite(0, 0, 'fizzle')
-  };
-  if ( flip ) {
-    charge_tower.scale.x = -1;
-  }
   return {
     overcharge: 0,
     charge: 0,
@@ -52,18 +24,12 @@ var Player = function(game, flip) {
     fizzled: false,
     _attackDown: false,
     _defendDown: false,
-    initHitSprites: function() {
-      var hit_sprites = game.game.add.sprite(0, 0 , '');
-      if ( flip ) {
-        hit_sprites.scale.x = -1;
-      }
-      sprites.hit_sprites = hit_sprites;
-      sprites.turret_hit = [
-        hit_sprites.addChild(game.game.make.sprite(-133, 2 , 'turret_hit')),
-        hit_sprites.addChild(game.game.make.sprite(-133, 2 + 2 , 'turret_hit')),
-        hit_sprites.addChild(game.game.make.sprite(-133, 2 + 4, 'turret_hit'))
-      ];
-      sprites.shield_hit = hit_sprites.addChild(game.game.make.sprite(-107, 3, 'shield_hit'));
+    spriteHandler: spriteHandler,
+    initBaseSprites: function() {
+      spriteHandler.initBaseSprites();
+    },
+    initEffectSprites: function() {
+      spriteHandler.initEffectSprites();
     },
     getStats: function() {
       return "Charge: " + this.charge + "\nHealth: " + this.health;
@@ -192,97 +158,16 @@ var Player = function(game, flip) {
       this.defendFailed = false;
       this.fizzled = false;
     },
-    setShotSprites: function( charge ) {
-      switch ( this.attackType ) {
-        case 'hit':
-          sprites.shot[0].frame = 0;
-          sprites.shot[1].frame = 0;
-          sprites.shot[2].frame = 0;
-        break;
-        case 'blocked':
-          sprites.shot[0].frame = 1;
-          sprites.shot[1].frame = 1;
-          sprites.shot[2].frame = 1;
-          sprites.shield_hit.visible = true;
-        break;
-        case 'dissipated':
-          sprites.shot[2].frame = this.attackDissipate > 0 ? 2 : 0;
-          sprites.shot[1].frame = this.attackDissipate > 1 ? 2 : 0;
-          sprites.shot[0].frame = this.attackDissipate > 2 ? 2 : 0;
-        break;
-      }
-
-      switch ( charge ) {
-        case 3:
-          sprites.shot[0].visible = true;
-        case 2:
-          sprites.shot[1].visible = true;
-        case 1:
-          sprites.shot[2].visible = true;
-        break;
-      }
-
-      sprites.turret_hit[0].visible = sprites.shot[0].visible && sprites.shot[0].frame == 0;
-      sprites.turret_hit[1].visible = sprites.shot[1].visible && sprites.shot[1].frame == 0;
-      sprites.turret_hit[2].visible = sprites.shot[2].visible && sprites.shot[2].frame == 0;
-    },
     render: function(x, y) {
-      modeText.x = x;
-      modeText.y = y + 30;
+      winsText.x = x;
+      winsText.y = y + 30;
 
-      sprites.shield.visible = false;
-      sprites.shot[0].visible = false;
-      sprites.shot[1].visible = false;
-      sprites.shot[2].visible = false;
-      sprites.turret_hit[0].visible = false;
-      sprites.turret_hit[1].visible = false;
-      sprites.turret_hit[2].visible = false;
-      sprites.fizzle.visible = false;
-      sprites.shield_hit.visible = false;
-
-      for ( var i = 0; i < 3; i++ ) {
-        sprites.heart[i].visible = i < Math.ceil(this.health / 2);
-        sprites.heart[i].frame = i < Math.floor(this.health / 2) ? 0 : 1;
-      }
-
-
-
-
-      switch ( this.lastMode ) {
-        case MODE.FIZZ:
-          sprites.fizzle.visible = true;
-          break;
-        case MODE.CHARGE:
-          break;
-        case MODE.ATTACK:
-          this.setShotSprites(this.attackStrength);
-          break;
-        case MODE.DEFEND:
-          sprites.shield.visible = !this.defendFailed;
-          break;
-      }
-      modeText.text = "Wins: " + this.winCount;
-
-      sprites.charge_tower.x = x;
-      sprites.charge_tower.y = y;
-      sprites.hit_sprites.x = x;
-      sprites.hit_sprites.y = y;
-
-      if ( flip ) {
-        sprites.fizzle.x = x - 6;
-        sprites.fizzle.y = y - 5;
-      } else {
-        sprites.fizzle.x = x - 6;
-        sprites.fizzle.y = y - 5;
-      }
-
-
-      for ( var i = 0 ; i < 3; i++ ) {
-        sprites.charge[i].visible = this.charge > i;
-        sprites.charge[i].frame = this.overcharge;
-      }
-
-
+      this.spriteHandler.setPos(x,y)
+      this.spriteHandler.hideSprites(this);
+      this.spriteHandler.updateHealthSprites(this);
+      this.spriteHandler.updateStateSprites(this);
+      this.spriteHandler.updateChargeSprites(this);
+      winsText.text = "Wins: " + this.winCount;
     }
   }
 }
