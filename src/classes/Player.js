@@ -1,9 +1,5 @@
-var MODE = {
-  FIZZ: -1,
-  CHARGE: 0,
-  ATTACK: 1,
-  DEFEND: 2
-}
+
+
 var Player = function(game, flip) {
   if (flip == undefined) {
     flip = false;
