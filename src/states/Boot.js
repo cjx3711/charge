@@ -18,6 +18,12 @@ BasicGame.Boot.prototype = {
         //  This tells the game to resize the renderer to match the game dimensions (i.e. 100% browser width / height)
         this.scale.scaleMode = Phaser.ScaleManager.RESIZE;
 
+        // scale the game 4x
+        this.scale.scaleMode = Phaser.ScaleManager.USER_SCALE;
+        this.scale.setUserScale(5, 5);
+        // enable crisp rendering
+        this.game.renderer.renderSession.roundPixels = true;
+        Phaser.Canvas.setImageRenderingCrisp(this.game.canvas);
     },
 
     preload: function () {

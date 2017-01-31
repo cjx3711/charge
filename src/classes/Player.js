@@ -1,13 +1,15 @@
-var MODE = {
-  FIZZ: -1,
-  CHARGE: 0,
-  ATTACK: 1,
-  DEFEND: 2
-}
-var Player = function(game) {
-  var canvas = game.game.add.graphics(0, 0);
-  var style = { font: "18px Arial", fill: "#fff" };
-  var modeText = game.game.add.text(10, 10, "Text", style);
+
+
+var Player = function(game, flip) {
+  if (flip == undefined) {
+    flip = false;
+  }
+
+  var spriteHandler = PlayerSprites(game.game, flip);
+
+  var style = { font: "5px Arial", fill: "#bbb" };
+  var winsText = game.game.add.text(2, 2, "Text", style);
+
   return {
     overcharge: 0,
     charge: 0,
@@ -15,9 +17,20 @@ var Player = function(game) {
     mode: 0,
     lastMode: 0,
     winCount: 0,
+    attackStrength: 0,
+    attackType: '',
+    attackDissipate: 0,
+    defendFailed: false,
     fizzled: false,
     _attackDown: false,
     _defendDown: false,
+    spriteHandler: spriteHandler,
+    initBaseSprites: function() {
+      spriteHandler.initBaseSprites();
+    },
+    initEffectSprites: function() {
+      spriteHandler.initEffectSprites();
+    },
     getStats: function() {
       return "Charge: " + this.charge + "\nHealth: " + this.health;
     },
@@ -57,7 +70,6 @@ var Player = function(game) {
       }
     },
     fizzle: function() {
-      console.log("Fizzled");
       this.fizzled = true;
       this.mode = MODE.FIZZ;
       this.lastMode = MODE.FIZZ;
@@ -68,25 +80,34 @@ var Player = function(game) {
      * @param  Player    enemy Enemy player object
      */
     roundUpdate: function(enemy) {
+      this.attackDissipate = 0;
       switch(this.mode) {
         case MODE.ATTACK: // Attack
-          switch (enemy.mode) {
-            case MODE.FIZZ:
-            case MODE.CHARGE:
-              enemy.health -= this.charge;
-            break;
-            case MODE.ATTACK:
-              var chargeDiff = this.charge - enemy.charge;
-              if ( chargeDiff > 0 ) {
-                enemy.health -= chargeDiff;
-              }
-            break;
-            case MODE.DEFEND:
-              if ( enemy.charge <= 0 ) {
+          this.attackStrength = this.charge;
+          if ( this.charge > 0 ) {
+            switch (enemy.mode) {
+              case MODE.FIZZ:
+              case MODE.CHARGE:
                 enemy.health -= this.charge;
-              }
-            break;
-
+                this.attackType = 'hit';
+              break;
+              case MODE.ATTACK:
+                this.attackType = 'dissipated';
+                var chargeDiff = this.charge - enemy.charge;
+                if ( chargeDiff > 0 ) {
+                  enemy.health -= chargeDiff;
+                }
+                this.attackDissipate = enemy.charge;
+              break;
+              case MODE.DEFEND:
+                if ( enemy.charge <= 0 ) {
+                  enemy.health -= this.charge;
+                  this.attackType = 'hit';
+                } else {
+                  this.attackType = 'blocked';
+                }
+              break;
+            }
           }
         break;
       }
@@ -110,7 +131,10 @@ var Player = function(game) {
           this.overcharge = 0;
         break;
         case MODE.DEFEND: // Defend
-          this.charge -= 1;
+          this.defendFailed = this.charge == 0;
+          if ( this.charge > 0 ) {
+            this.charge -= 1;
+          }
           this.overcharge = 0;
         break;
       }
@@ -128,55 +152,22 @@ var Player = function(game) {
       this.health = 6;
       this.mode = MODE.CHARGE;
       this.lastMode = 0;
+      this.attackStrength =  0;
+      this.attackType =  '';
+      this.attackDissipate =  0;
+      this.defendFailed = false;
+      this.fizzled = false;
     },
     render: function(x, y) {
-      canvas.clear();
+      winsText.x = x;
+      winsText.y = y + 30;
 
-      var chargeColour = 0xFFFF00;
-      var overchargeColour = 0xFF0000;
-      var overchargePerc = this.overcharge / 3;
-      var chargeColour = chargeColour * (1-overchargePerc) + overchargeColour * overchargePerc;
-      for ( var i = 0 ; i < this.charge; i++ ) {
-        canvas.beginFill(chargeColour, 1);
-        canvas.drawCircle(x + 15 + i * 40, y , 30);
-      }
-
-      var i = 0;
-      var healthCountdown = this.health;
-      while ( this.health > 0 ) {
-        canvas.beginFill(0x22FF44, 0.4);
-        canvas.lineStyle(4, 0x22FF44, 1);
-
-        if ( healthCountdown == 1 ) {
-          canvas.beginFill(0x000000, 0);
-        }
-        canvas.drawCircle(x + 15 + i * 40, y + 40, 30);
-        healthCountdown -= 2;
-
-        if ( healthCountdown <= 0 ) {
-          break;
-        }
-        i++;
-      }
-
-      modeText.x = x;
-      modeText.y = y + 65;
-
-      switch ( this.lastMode ) {
-        case -1:
-          modeText.text = "Miss";
-          break;
-        case 0:
-          modeText.text = "Charge";
-          break;
-        case 1:
-          modeText.text = "Attack";
-          break;
-        case 2:
-          modeText.text = "Defend";
-          break;
-      }
-      modeText.text += "\nWins: " + this.winCount;
+      this.spriteHandler.setPos(x,y)
+      this.spriteHandler.hideSprites(this);
+      this.spriteHandler.updateHealthSprites(this);
+      this.spriteHandler.updateStateSprites(this);
+      this.spriteHandler.updateChargeSprites(this);
+      winsText.text = "Wins: " + this.winCount;
     }
   }
 }

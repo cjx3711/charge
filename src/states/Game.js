@@ -22,16 +22,15 @@ BasicGame.Game = function (game) {
 
     //	You can use any of these from any function within this State.
     //	But do consider them as being 'reserved words', i.e. don't create a property for your own game called "world" or you'll over-write the world reference.
-		this.roundTime = 1000;
-		this.timeThreshold = 0.15;
+		this.roundTime = 850;
+		this.timeThreshold = 0.35;
 		this.roundTimer = this.roundTime;
+		this.win = 0;
 		this.gameObj = {
 			screenText: null,
 			player1Stats: null,
 			player2Stats: null,
-
 		}
-
 
 
 
@@ -41,21 +40,61 @@ BasicGame.Game.prototype = {
 
 	create: function () {
 		console.log("Game create function");
+		this.bg = this.add.sprite(0, -40,'background');
+
+		this.tempbeep = this.add.audio('temp_beep');
+		this.tempbeep.volume = 0.2;
 
 		this.game.stage.backgroundColor = '#000000';
-		this.player1 = Player(this);
+		this.player1 = Player(this, true);
 		this.player2 = Player(this);
-
+    this.player1.initBaseSprites();
+    this.player2.initBaseSprites();
+		this.player1.initEffectSprites();
+		this.player2.initEffectSprites();
 		this.roundRenderer = RoundRenderer(this);
 
-		var style = { font: "bold 18px Arial", fill: "#fff" };
-		this.gameObj.screenText = this.game.add.text(10, 10, "Attack: A\nDefend: D", style);
-		this.gameObj.player1Stats = this.game.add.text(500, 10, "Attack: ←\nDefend: →", style);
+		var style = { font: "6px Arial", fill: "#fff" };
+		this.gameObj.player1Stats = this.game.add.sprite(6, 4, 'player1controls');
+		this.gameObj.player2Stats = this.game.add.sprite(156, 4, 'player2controls');
+		this.gameObj.player1Stats.lineSpacing = -5;
+		this.gameObj.player2Stats.lineSpacing = -5;
+		this.gameObj.winText = this.game.add.sprite(60, 22, 'win_text');
+
+		this.gameObj.winText.visible = false;
+
+
+		// var style = { font: "5px Arial", fill: "#fff" };
+
+		// this.gameObj.screenText = this.game.add.text(2, 85, "", style);
+		// this.gameObj.screenText.lineSpacing = -5;
+		//
+		// this.gameObj.screenText.text += "Charge v a0.2\n";
+		// this.gameObj.screenText.text += "Instructions:\n";
+		// this.gameObj.screenText.text += "Attack or Defend when the red circle touches the green one.\n";
+		// this.gameObj.screenText.text += "   - If you miss, nothing happens for the round\n";
+		// this.gameObj.screenText.text += "   - If you leave it, it will charge\n";
+		// this.gameObj.screenText.text += "Attacking will deal damage based on the charge\n";
+		// this.gameObj.screenText.text += "Defending requires 1 charge and will block all attacks\n";
+		// this.gameObj.screenText.text += "If you overcharge, you will lose all the charges\n";
+
+		this.gameObj.dissipate = [
+			this.game.add.sprite(90, 10 + 43 + 4, 'dissipate'),
+			this.game.add.sprite(90, 10 + 43 + 2, 'dissipate'),
+			this.game.add.sprite(90, 10 + 43 , 'dissipate')
+		]
+		// sprite.scale.setTo(4,4);
 	},
 
 	update: function () {
 
 		this.roundTimer -= this.time.elapsed;
+		if ( this.roundTimer < this.roundTime * this.timeThreshold * 0.5 ) {
+			if ( !this.audioPlayed ) {
+				this.tempbeep.play();
+				this.audioPlayed = true;
+			}
+		}
 		if ( this.roundTimer <= 0 ) {
 			if ( this.roundTimer <= - this.roundTime ) {
 				this.roundTimer = 0;
@@ -72,9 +111,15 @@ BasicGame.Game.prototype = {
 			this.game.input.keyboard.isDown(Phaser.Keyboard.A),
 			this.game.input.keyboard.isDown(Phaser.Keyboard.D),
 			this.roundTimer);
-		this.roundRenderer.render(300, 50);
-		this.player1.render(10, 100);
-		this.player2.render(500, 100);
+
+		this.roundRenderer.render(100, 40 + 30);
+		this.player1.render(30, 37 + 10);
+		this.player2.render(170, 37 + 10);
+
+		var dissipate = Math.min(this.player1.attackDissipate, this.player2.attackDissipate);
+		this.gameObj.dissipate[0].visible = dissipate > 0;
+		this.gameObj.dissipate[1].visible = dissipate > 1;
+		this.gameObj.dissipate[2].visible = dissipate > 2;
 	},
 
 	roundUpdate: function() {
@@ -84,17 +129,28 @@ BasicGame.Game.prototype = {
 		this.player1.roundPostUpdate();
 		this.player2.roundPostUpdate();
 
-		if ( this.player1.health <= 0 ) {
+		this.audioPlayed = false;
+
+
+		if ( this.win > 0 ) {
+			this.win = 0;
 			this.player1.reset();
 			this.player2.reset();
-			this.player2.winCount += 1;
+			this.gameObj.winText.text = "";
+			this.gameObj.winText.visible = false;
 			this.roundTimer = this.roundTime;
 		}
-		if ( this.player2.health <= 0 ) {
-			this.player1.reset();
-			this.player2.reset();
+
+		if ( this.player1.health <= 0 ) {
+			this.player2.winCount += 1;
+			this.win = 2;
+			this.gameObj.winText.visible = true;
+			this.gameObj.winText.frame = 1;
+		} else if ( this.player2.health <= 0 ) {
 			this.player1.winCount += 1;
-			this.roundTimer = this.roundTime;
+			this.win = 1;
+			this.gameObj.winText.visible = true;
+			this.gameObj.winText.frame = 0;
 		}
 	},
 
