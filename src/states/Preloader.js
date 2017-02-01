@@ -37,6 +37,7 @@ BasicGame.Preloader.prototype = {
 		this.load.image('shield_hit', 'assets/sprites/shield_hit.png');
 		this.load.image('player1controls', 'assets/sprites/player1controls.png');
 		this.load.image('player2controls', 'assets/sprites/player2controls.png');
+		this.load.spritesheet('waste', 'assets/sprites/waste_sprite.png', 16, 29, 7);
 		this.load.spritesheet('shot', 'assets/sprites/shot_sprite.png', 104, 5, 3);
 		this.load.spritesheet('charge', 'assets/sprites/charge_sprite.png', 8, 4, 4);
 		this.load.spritesheet('heart', 'assets/sprites/heart_sprite.png', 5, 5, 2);

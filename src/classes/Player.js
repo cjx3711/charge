@@ -123,6 +123,7 @@ var Player = function(game, flip) {
             if ( this.overcharge > 3 ) {
               this.charge = 0;
               this.overcharge = 0;
+              this.spriteHandler.playWasteEffect();
             }
           }
         break;

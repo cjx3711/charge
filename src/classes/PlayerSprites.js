@@ -32,7 +32,8 @@ var PlayerSprites = function(game, flip) {
     container: null,
     fizzle: null,
     shield_hit: null,
-    turret_hit: null
+    turret_hit: null,
+    waste: null
   }
 
   return {
@@ -79,10 +80,20 @@ var PlayerSprites = function(game, flip) {
         container.addChild(game.make.sprite(-133, 2 + 4, 'turret_hit'))
       ];
       effectSprites.shield_hit = container.addChild(game.make.sprite(-107, 3, 'shield_hit'));
+      effectSprites.waste = container.addChild(game.make.sprite(5, -26, 'waste'));
+
+      var explodeAnim = effectSprites.waste.animations.add('explode');
+      explodeAnim.onComplete.add( function(sprite, animation) {
+        sprite.frame = 0;
+      });
 
       if ( flip ) {
         container.scale.x = -1;
       }
+    },
+    playWasteEffect: function() {
+      effectSprites.waste.frame = 1;
+      effectSprites.waste.animations.play('explode', 10);
     },
     hideSprites: function(player) {
       baseSprites.shield.visible = false;
