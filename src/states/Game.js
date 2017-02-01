@@ -26,7 +26,8 @@ BasicGame.Game = function (game) {
 		this.timeThreshold = 0.35;
 		this.roundTimer = this.roundTime;
 		this.win = 0;
-		this.gameObj = {
+    this.helpText = true;
+		this.sprites = {
 			screenText: null,
 			player1Stats: null,
 			player2Stats: null,
@@ -55,30 +56,32 @@ BasicGame.Game.prototype = {
 		this.roundRenderer = RoundRenderer(this);
 
 		var style = { font: "6px Arial", fill: "#fff" };
-		this.gameObj.player1Stats = this.game.add.sprite(6, 4, 'player1controls');
-		this.gameObj.player2Stats = this.game.add.sprite(156, 4, 'player2controls');
-		this.gameObj.player1Stats.lineSpacing = -5;
-		this.gameObj.player2Stats.lineSpacing = -5;
-		this.gameObj.winText = this.game.add.sprite(60, 22, 'win_text');
+		this.sprites.player1Stats = this.game.add.sprite(6, 4, 'player1controls');
+		this.sprites.player2Stats = this.game.add.sprite(156, 4, 'player2controls');
+		this.sprites.player1Stats.lineSpacing = -5;
+		this.sprites.player2Stats.lineSpacing = -5;
+		this.sprites.winText = this.game.add.sprite(60, 22, 'win_text');
 
-		this.gameObj.winText.visible = false;
+		this.sprites.winText.visible = false;
 
+    this.sprites.press_text = this.game.add.sprite(90, 110, 'press_text');
+    this.sprites.key_press = this.game.add.sprite(90, 120, 'key_press');
 
 		// var style = { font: "5px Arial", fill: "#fff" };
 
-		// this.gameObj.screenText = this.game.add.text(2, 85, "", style);
-		// this.gameObj.screenText.lineSpacing = -5;
+		// this.sprites.screenText = this.game.add.text(2, 85, "", style);
+		// this.sprites.screenText.lineSpacing = -5;
 		//
-		// this.gameObj.screenText.text += "Charge v a0.2\n";
-		// this.gameObj.screenText.text += "Instructions:\n";
-		// this.gameObj.screenText.text += "Attack or Defend when the red circle touches the green one.\n";
-		// this.gameObj.screenText.text += "   - If you miss, nothing happens for the round\n";
-		// this.gameObj.screenText.text += "   - If you leave it, it will charge\n";
-		// this.gameObj.screenText.text += "Attacking will deal damage based on the charge\n";
-		// this.gameObj.screenText.text += "Defending requires 1 charge and will block all attacks\n";
-		// this.gameObj.screenText.text += "If you overcharge, you will lose all the charges\n";
+		// this.sprites.screenText.text += "Charge v a0.2\n";
+		// this.sprites.screenText.text += "Instructions:\n";
+		// this.sprites.screenText.text += "Attack or Defend when the red circle touches the green one.\n";
+		// this.sprites.screenText.text += "   - If you miss, nothing happens for the round\n";
+		// this.sprites.screenText.text += "   - If you leave it, it will charge\n";
+		// this.sprites.screenText.text += "Attacking will deal damage based on the charge\n";
+		// this.sprites.screenText.text += "Defending requires 1 charge and will block all attacks\n";
+		// this.sprites.screenText.text += "If you overcharge, you will lose all the charges\n";
 
-		this.gameObj.dissipate = [
+		this.sprites.dissipate = [
 			this.game.add.sprite(90, 10 + 43 + 4, 'dissipate'),
 			this.game.add.sprite(90, 10 + 43 + 2, 'dissipate'),
 			this.game.add.sprite(90, 10 + 43 , 'dissipate')
@@ -112,14 +115,36 @@ BasicGame.Game.prototype = {
 			this.game.input.keyboard.isDown(Phaser.Keyboard.D),
 			this.roundTimer);
 
+    if ( this.helpText ) {
+      this.sprites.key_press.visible = true;
+
+      if ( this.roundTimer < this.roundTime * this.timeThreshold * 0.8) {
+        this.sprites.key_press.frame = 1;
+        this.sprites.press_text.visible = true;
+      } else {
+        this.sprites.key_press.frame = 0;
+        // this.sprites.key_press.visible = false;
+        this.sprites.press_text.visible = false;
+      }
+    } else {
+      this.sprites.key_press.visible = false;
+      this.sprites.press_text.visible = false;
+    }
+
+    if ( this.player1.combo > 6 && this.player2.combo > 6 ) {
+      this.helpText = false;
+    } else if ( this.player1.combo <= -3 || this.player2.combo <= -3 ) {
+      this.helpText = true;
+    }
+
 		this.roundRenderer.render(100, 40 + 30);
 		this.player1.render(30, 37 + 10);
 		this.player2.render(170, 37 + 10);
 
 		var dissipate = Math.min(this.player1.attackDissipate, this.player2.attackDissipate);
-		this.gameObj.dissipate[0].visible = dissipate > 0;
-		this.gameObj.dissipate[1].visible = dissipate > 1;
-		this.gameObj.dissipate[2].visible = dissipate > 2;
+		this.sprites.dissipate[0].visible = dissipate > 0;
+		this.sprites.dissipate[1].visible = dissipate > 1;
+		this.sprites.dissipate[2].visible = dissipate > 2;
 	},
 
 	roundUpdate: function() {
@@ -131,26 +156,27 @@ BasicGame.Game.prototype = {
 
 		this.audioPlayed = false;
 
+    console.log(this.player1.combo, this.player2.combo, this.player1.noPress);
 
 		if ( this.win > 0 ) {
 			this.win = 0;
 			this.player1.reset();
 			this.player2.reset();
-			this.gameObj.winText.text = "";
-			this.gameObj.winText.visible = false;
+			this.sprites.winText.text = "";
+			this.sprites.winText.visible = false;
 			this.roundTimer = this.roundTime;
 		}
 
 		if ( this.player1.health <= 0 ) {
 			this.player2.winCount += 1;
 			this.win = 2;
-			this.gameObj.winText.visible = true;
-			this.gameObj.winText.frame = 1;
+			this.sprites.winText.visible = true;
+			this.sprites.winText.frame = 1;
 		} else if ( this.player2.health <= 0 ) {
 			this.player1.winCount += 1;
 			this.win = 1;
-			this.gameObj.winText.visible = true;
-			this.gameObj.winText.frame = 0;
+			this.sprites.winText.visible = true;
+			this.sprites.winText.frame = 0;
 		}
 	},
 

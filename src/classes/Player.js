@@ -20,6 +20,8 @@ var Player = function(game, flip) {
     attackStrength: 0,
     attackType: '',
     attackDissipate: 0,
+    combo: 0,
+    noPress: 0,
     defendFailed: false,
     fizzled: false,
     _attackDown: false,
@@ -139,13 +141,32 @@ var Player = function(game, flip) {
           this.overcharge = 0;
         break;
       }
+      if ( this.mode == MODE.CHARGE && !this.fizzled ) {
+        this.noPress += 1;
+        if ( this.noPress >= 6 ) {
+          this.combo = 0;
+        }
+      } else {
+        this.noPress = 0;
+      }
+      if ( this.fizzled ) {
+        if ( this.combo > 0 ) {
+          this.combo = 0;
+        }
+        this.combo -= 1;
+        this.fizzled = false;
+      } else {
+        if ( this.combo < 0 ) {
+          this.combo = 0;
+        }
+        this.combo += 1;
+      }
 
-      this.lastMode = this.mode;
-      this.mode = MODE.CHARGE;
-      this.fizzled = false;
       if ( this.charge < 0 ) {
         this.charge = 0;
       }
+      this.lastMode = this.mode;
+      this.mode = MODE.CHARGE;
     },
     reset: function() {
       this.overcharge = 0;
@@ -158,6 +179,7 @@ var Player = function(game, flip) {
       this.attackDissipate =  0;
       this.defendFailed = false;
       this.fizzled = false;
+      this.combo = 0;
     },
     render: function(x, y) {
       winsText.x = x;
