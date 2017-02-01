@@ -31,9 +31,8 @@ BasicGame.Game = function (game) {
 			player1Stats: null,
 			player2Stats: null,
 		}
-
-
-
+    this.gameAI = false;
+    this.spaceDown = false;
 };
 
 BasicGame.Game.prototype = {
@@ -102,6 +101,12 @@ BasicGame.Game.prototype = {
 			this.roundTimer += this.roundTime;
 			this.roundUpdate();
 		}
+
+    if ( this.game.input.keyboard.isDown(Phaser.Keyboard.SPACE) && !this.spaceDown ) {
+      this.gameAI = !this.gameAI;
+      console.log(this.gameAI);
+    }
+    this.spaceDown = this.game.input.keyboard.isDown(Phaser.Keyboard.SPACE)
 
 		this.player2.buttonHandler(
 			this.game.input.keyboard.isDown(Phaser.Keyboard.LEFT),
