@@ -10,6 +10,7 @@ var Player = function(game, flip) {
   var style = { font: "5px Arial", fill: "#bbb" };
   var winsText = game.game.add.text(2, 2, "Text", style);
 
+
   return {
     overcharge: 0,
     charge: 0,
@@ -185,8 +186,8 @@ var Player = function(game, flip) {
       this.combo = 0;
     },
     render: function(x, y) {
-      winsText.x = x;
-      winsText.y = y + 30;
+      winsText.x = x + (flip ? 2 : -18);
+      winsText.y = y + 42;
 
       this.spriteHandler.setPos(x,y)
       this.spriteHandler.hideSprites(this);

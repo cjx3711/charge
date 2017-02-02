@@ -50,9 +50,9 @@ var PlayerSprites = function(game, flip) {
         container.addChild(game.make.sprite(8, 17-12, 'charge'))
       ];
       baseSprites.heart = [
-        container.addChild(game.make.sprite(-20, 25, 'heart')),
-        container.addChild(game.make.sprite(-20 + 7, 25, 'heart')),
-        container.addChild(game.make.sprite(-20 + 7 * 2, 25, 'heart'))
+        container.addChild(game.make.sprite(-20,         -3, 'heart')),
+        container.addChild(game.make.sprite(-20 + 7,     -3, 'heart')),
+        container.addChild(game.make.sprite(-20 + 7 * 2, -3, 'heart'))
       ];
 
       baseSprites.turret = container.addChild(game.make.sprite(-20, 5, 'turret'));
@@ -122,6 +122,7 @@ var PlayerSprites = function(game, flip) {
           baseSprites.shield.visible = !player.defendFailed;
           break;
       }
+      baseSprites.wire.frame = player.lastMode + 1;
     },
     updateHealthSprites: function(player) {
       for ( var i = 0; i < 3; i++ ) {

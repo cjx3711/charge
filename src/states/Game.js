@@ -1,8 +1,6 @@
 
 BasicGame.Game = function (game) {
-
-	//	When a State is added to Phaser it automatically has the following properties set on it, even if they already exist:
-
+  	//	When a State is added to Phaser it automatically has the following properties set on it, even if they already exist:
     this.game;		//	a reference to the currently running game
     this.add;		//	used to add sprites, text, groups, etc
     this.camera;	//	a reference to the game camera
@@ -23,18 +21,20 @@ BasicGame.Game = function (game) {
     //	You can use any of these from any function within this State.
     //	But do consider them as being 'reserved words', i.e. don't create a property for your own game called "world" or you'll over-write the world reference.
 		this.roundTime = 850;
-		this.timeThreshold = 0.35;
+		this.timeThreshold = 0.3;
 		this.roundTimer = this.roundTime;
 		this.win = 0;
-    this.helpText = false;
+    this.helpText = [
+      true, true
+    ];
+    this.players = [
+
+    ]
 		this.sprites = {
 			screenText: null,
 			player1Stats: null,
 			player2Stats: null,
 		}
-
-
-
 };
 
 BasicGame.Game.prototype = {
@@ -49,6 +49,10 @@ BasicGame.Game.prototype = {
 		this.game.stage.backgroundColor = '#000000';
 		this.player1 = Player(this, true);
 		this.player2 = Player(this);
+    this.players = [
+      this.player1,
+      this.player2
+    ]
     this.player1.initBaseSprites();
     this.player2.initBaseSprites();
 		this.player1.initEffectSprites();
@@ -64,8 +68,14 @@ BasicGame.Game.prototype = {
 
 		this.sprites.winText.visible = false;
 
-    this.sprites.press_text = this.game.add.sprite(90, 110, 'press_text');
-    this.sprites.key_press = this.game.add.sprite(90, 120, 'key_press');
+    this.sprites.press_text = [
+      this.game.add.sprite(10, 96, 'press_text'),
+      this.game.add.sprite(170, 96, 'press_text')
+    ];
+    this.sprites.key_press = [
+      this.game.add.sprite(10, 106, 'key_press'),
+      this.game.add.sprite(170, 106, 'key_press')
+    ]
 
 		// var style = { font: "5px Arial", fill: "#fff" };
 
@@ -84,7 +94,7 @@ BasicGame.Game.prototype = {
 		this.sprites.dissipate = [
 			this.game.add.sprite(90, 10 + 43 + 4, 'dissipate'),
 			this.game.add.sprite(90, 10 + 43 + 2, 'dissipate'),
-			this.game.add.sprite(90, 10 + 43 , 'dissipate')
+			this.game.add.sprite(90, 10 + 43    , 'dissipate')
 		]
 		// sprite.scale.setTo(4,4);
 	},
@@ -115,27 +125,32 @@ BasicGame.Game.prototype = {
 			this.game.input.keyboard.isDown(Phaser.Keyboard.D),
 			this.roundTimer);
 
-    if ( this.helpText ) {
-      this.sprites.key_press.visible = true;
+    for ( var i = 0; i < 2; i++ ) {
+      if ( this.helpText[i] ) {
+        this.sprites.key_press[i].visible = true;
+        this.sprites.press_text[i].visible = true;
 
-      if ( this.roundTimer < this.roundTime * this.timeThreshold * 0.8) {
-        this.sprites.key_press.frame = 1;
-        this.sprites.press_text.visible = true;
+        if ( this.roundTimer < this.roundTime * this.timeThreshold) {
+          this.sprites.key_press[i].frame = 1;
+          this.sprites.press_text[i].alpha = 1;
+        } else {
+          this.sprites.key_press[i].frame = 0;
+          // this.sprites.key_press.visible = false;
+          this.sprites.press_text[i].alpha = 0.5;
+        }
       } else {
-        this.sprites.key_press.frame = 0;
-        // this.sprites.key_press.visible = false;
-        this.sprites.press_text.visible = false;
+        this.sprites.key_press[i].visible = false;
+        this.sprites.press_text[i].visible = false;
       }
-    } else {
-      this.sprites.key_press.visible = false;
-      this.sprites.press_text.visible = false;
+      if ( this.players[i].combo > 6) {
+        this.helpText[i] = false;
+      } else if ( this.players[i].combo <= -3) {
+        this.helpText[i] = true;
+      }
     }
 
-    if ( this.player1.combo > 6 && this.player2.combo > 6 ) {
-      this.helpText = false;
-    } else if ( this.player1.combo <= -3 || this.player2.combo <= -3 ) {
-      this.helpText = true;
-    }
+
+
 
 		this.roundRenderer.render(100, 80);
 		this.player1.render(30, 37 + 10);
