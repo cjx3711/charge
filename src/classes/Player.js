@@ -83,6 +83,9 @@ var Player = function(game, flip) {
      */
     roundUpdate: function(enemy) {
       this.attackDissipate = 0;
+      if ( this.charge == 0 ) {
+        this.mode = MODE.CHARGE;
+      }
       switch(this.mode) {
         case MODE.ATTACK: // Attack
           this.attackStrength = this.charge;
