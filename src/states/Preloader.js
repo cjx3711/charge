@@ -39,13 +39,21 @@ BasicGame.Preloader.prototype = {
 		this.load.image('player2controls', 'assets/sprites/player2controls.png');
 		this.load.image('background', 'assets/background.png');
 		this.load.image('press_text', 'assets/sprites/press_text.png');
-
+		this.load.image('timerbar', 'assets/sprites/timerbar.png');
+		this.load.image('power_pipe', 'assets/sprites/power_pipe.png');
+		this.load.image('power', 'assets/sprites/power.png');
+		this.load.image('generator', 'assets/sprites/generator.png');
+		this.load.image('generator_energy', 'assets/sprites/generator_energy.png');
+		this.load.image('generator_glow', 'assets/sprites/generator_glow.png');
+		this.load.image('underground_crystals', 'assets/sprites/underground_crystals.png');
+		this.load.image('underground_crystals_glow', 'assets/sprites/underground_crystals_glow.png');
 		this.load.spritesheet('waste', 'assets/sprites/waste_sprite.png', 16, 29, 7);
 		this.load.spritesheet('shot', 'assets/sprites/shot_sprite.png', 104, 5, 3);
 		this.load.spritesheet('charge', 'assets/sprites/charge_sprite.png', 8, 4, 4);
 		this.load.spritesheet('heart', 'assets/sprites/heart_sprite.png', 5, 5, 2);
 		this.load.spritesheet('win_text', 'assets/sprites/win_sprite.png', 76, 9, 2);
 		this.load.spritesheet('key_press', 'assets/sprites/key_press_sprite.png', 21, 18, 2);
+		this.load.spritesheet('wire', 'assets/sprites/wire_sprite.png', 50, 16, 4);
 
 		this.load.audio('temp_beep', 'assets/audio/temp_beep.mp3');
 

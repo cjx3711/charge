@@ -26,7 +26,7 @@ BasicGame.Game = function (game) {
 		this.timeThreshold = 0.35;
 		this.roundTimer = this.roundTime;
 		this.win = 0;
-    this.helpText = true;
+    this.helpText = false;
 		this.sprites = {
 			screenText: null,
 			player1Stats: null,
@@ -137,7 +137,7 @@ BasicGame.Game.prototype = {
       this.helpText = true;
     }
 
-		this.roundRenderer.render(100, 40 + 30);
+		this.roundRenderer.render(100, 80);
 		this.player1.render(30, 37 + 10);
 		this.player2.render(170, 37 + 10);
 
