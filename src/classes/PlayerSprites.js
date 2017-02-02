@@ -25,7 +25,8 @@ var PlayerSprites = function(game, flip) {
     heart: null,
     shot: null,
     shield: null,
-    shield_base: null
+    shield_base: null,
+    wire: null
   };
 
   var effectSprites = {
@@ -42,11 +43,11 @@ var PlayerSprites = function(game, flip) {
     initBaseSprites: function() {
       var container = game.add.sprite(0,0,'');
       baseSprites.container = container;
-      baseSprites.charge_tower = container.addChild(game.make.sprite(0, 0, 'charge_tower'));
+      baseSprites.charge_tower = container.addChild(game.make.sprite(-1, 0, 'charge_tower'));
       baseSprites.charge = [
-        container.addChild(game.make.sprite(9, 17, 'charge')),
-        container.addChild(game.make.sprite(9, 17-6, 'charge')),
-        container.addChild(game.make.sprite(9, 17-12, 'charge'))
+        container.addChild(game.make.sprite(8, 17, 'charge')),
+        container.addChild(game.make.sprite(8, 17-6, 'charge')),
+        container.addChild(game.make.sprite(8, 17-12, 'charge'))
       ];
       baseSprites.heart = [
         container.addChild(game.make.sprite(-20, 25, 'heart')),
@@ -62,9 +63,10 @@ var PlayerSprites = function(game, flip) {
         container.addChild(game.make.sprite(-104 - 16, 8 + 2, 'shot'))
       ];
 
-      baseSprites.shield = container.addChild(game.make.sprite(-37, -12, 'shield'));
-      baseSprites.shield_base = container.addChild(game.make.sprite(-37, 17, 'shield_base'));
+      baseSprites.shield = container.addChild(game.make.sprite(-35, -12, 'shield'));
+      baseSprites.shield_base = container.addChild(game.make.sprite(-35, 17, 'shield_base'));
 
+      baseSprites.wire = container.addChild(game.make.sprite(-33, 21, 'wire'));
       if ( flip ) {
         container.scale.x = -1;
       }
@@ -79,7 +81,7 @@ var PlayerSprites = function(game, flip) {
         container.addChild(game.make.sprite(-133, 2 + 2 , 'turret_hit')),
         container.addChild(game.make.sprite(-133, 2 + 4, 'turret_hit'))
       ];
-      effectSprites.shield_hit = container.addChild(game.make.sprite(-107, 3, 'shield_hit'));
+      effectSprites.shield_hit = container.addChild(game.make.sprite(-108, 3, 'shield_hit'));
       effectSprites.waste = container.addChild(game.make.sprite(5, -26, 'waste'));
 
       var explodeAnim = effectSprites.waste.animations.add('explode');
